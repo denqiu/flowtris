@@ -1,66 +1,230 @@
-import { navigateTo } from '@devvit/web/client';
-import { useCounter } from './hooks/useCounter';
-import CityGrid, { SizeTest } from './components/CityGrid';
+import React, { useState, useEffect } from 'react';
+import { Box, Container, Typography, Button, Card, CardContent } from '@mui/material';
+import { PlayArrow, Star, Construction, People } from '@mui/icons-material';
+import { useLevelManager } from './hooks/useLevelManager';
+import LevelSelector from './components/LevelSelector';
+import GameHUD from './components/GameHUD';
+import CityGrid from './components/CityGrid';
+import LevelCompleteDialog from './components/LevelCompleteDialog';
+import { GameState } from './shared/types/level';
 
 export const App = () => {
-  const { count, username, loading, increment, decrement } = useCounter();
+  const {
+    currentLevel,
+    gameProgress,
+    totalStars,
+    levelStats,
+    startLevel,
+    pauseLevel,
+    resumeLevel,
+    completeLevel,
+    failLevel,
+    returnToMenu,
+    updateProgress,
+    getLevelStats,
+    isLevelUnlocked,
+  } = useLevelManager();
+
+  const [showLevelSelector, setShowLevelSelector] = useState(true);
+  const [showCompletionDialog, setShowCompletionDialog] = useState(false);
+
+  // Show completion dialog when level is completed or failed
+  useEffect(() => {
+    if (gameProgress && (gameProgress.gameState === 'completed' || gameProgress.gameState === 'failed')) {
+      setShowCompletionDialog(true);
+    }
+  }, [gameProgress]);
+
+  const handleLevelSelect = (levelId: string) => {
+    const success = startLevel(levelId);
+    if (success) {
+      setShowLevelSelector(false);
+      setShowCompletionDialog(false);
+    }
+  };
+
+  const handleReturnToMenu = () => {
+    returnToMenu();
+    setShowLevelSelector(true);
+    setShowCompletionDialog(false);
+  };
+
+  const handlePause = () => {
+    pauseLevel();
+  };
+
+  const handleResume = () => {
+    resumeLevel();
+  };
+
+  const handleNextLevel = () => {
+    // For now, just return to menu. In a real implementation, you'd load the next level
+    handleReturnToMenu();
+  };
+
+  const handleRetryLevel = () => {
+    if (currentLevel) {
+      startLevel(currentLevel.id);
+      setShowCompletionDialog(false);
+    }
+  };
+
+  // Mock game actions for demonstration
+  const handleMockComplete = () => {
+    if (currentLevel && gameProgress) {
+      const mockScore = Math.floor(Math.random() * 1000) + 500;
+      const mockPeople = currentLevel.objectives.peopleToTransport;
+      const mockPotholes = currentLevel.objectives.potholesToFill || 0;
+      
+      completeLevel(mockScore, mockPeople, mockPotholes);
+    }
+  };
+
+  const handleMockFail = () => {
+    failLevel();
+  };
+
+  // Show level selector
+  if (showLevelSelector) {
+    return (
+      <Box sx={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
+        <LevelSelector
+          onLevelSelect={handleLevelSelect}
+          levelStats={levelStats}
+          totalStars={totalStars}
+          isLevelUnlocked={isLevelUnlocked}
+        />
+      </Box>
+    );
+  }
+
+  // Show game interface
+  if (currentLevel && gameProgress) {
   return (
-    <div className="flex relative flex-col justify-center items-center min-h-screen gap-4">
-      <div className="flex flex-col items-center gap-2">
-        {/* <CityGrid rows={10} columns={10} /> */}
-        <SizeTest />
-      </div>
-      <img className="object-contain w-1/2 max-w-[250px] mx-auto" src="/snoo.png" alt="Snoo" />
-      <div className="flex flex-col items-center gap-2">
-        <h1 className="text-2xl font-bold text-center text-gray-900 ">
-          {username ? `Hey ${username} 👋` : ''}
-        </h1>
-        <p className="text-base text-center text-gray-600 ">
-          Edit <span className="bg-[#e5ebee]  px-1 py-0.5 rounded">src/client/App.tsx</span> to get
-          started.
-        </p>
-      </div>
-      <div className="flex items-center justify-center mt-5">
-        <button
-          className="flex items-center justify-center bg-[#d93900] text-white w-14 h-14 text-[2.5em] rounded-full cursor-pointer font-mono leading-none transition-colors"
-          onClick={decrement}
-          disabled={loading}
-        >
-          -
-        </button>
-        <span className="text-[1.8em] font-medium mx-5 min-w-[50px] text-center leading-none text-gray-900">
-          {loading ? '...' : count}
-        </span>
-        <button
-          className="flex items-center justify-center bg-[#d93900] text-white w-14 h-14 text-[2.5em] rounded-full cursor-pointer font-mono leading-none transition-colors"
-          onClick={increment}
-          disabled={loading}
-        >
-          +
-        </button>
-      </div>
-      <footer className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-3 text-[0.8em] text-gray-600">
-        <button
-          className="cursor-pointer"
-          onClick={() => navigateTo('https://developers.reddit.com/docs')}
-        >
-          Docs
-        </button>
-        <span className="text-gray-300">|</span>
-        <button
-          className="cursor-pointer"
-          onClick={() => navigateTo('https://www.reddit.com/r/Devvit')}
-        >
-          r/Devvit
-        </button>
-        <span className="text-gray-300">|</span>
-        <button
-          className="cursor-pointer"
-          onClick={() => navigateTo('https://discord.com/invite/R7yu2wh9Qz')}
-        >
-          Discord
-        </button>
-      </footer>
-    </div>
+      <Box sx={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
+        <GameHUD
+          gameProgress={gameProgress}
+          onPause={handlePause}
+          onResume={handleResume}
+          onReturnToMenu={handleReturnToMenu}
+          gameState={gameProgress.gameState}
+        />
+        
+        {/* Game Area */}
+        <Box sx={{ pt: 12, pb: 4 }}>
+          <Container maxWidth="lg">
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h4" component="h1" align="center" gutterBottom>
+                {currentLevel.name}
+              </Typography>
+              <Typography variant="body1" align="center" color="text.secondary" gutterBottom>
+                {currentLevel.description}
+              </Typography>
+            </Box>
+
+            {/* Game Grid */}
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+              <CityGrid
+                rows={currentLevel.gridSize.rows}
+                columns={currentLevel.gridSize.columns}
+              />
+            </Box>
+
+            {/* Mock Game Controls */}
+            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 4 }}>
+              <Button
+                variant="contained"
+                color="success"
+                startIcon={<People />}
+                onClick={() => updateProgress({ 
+                  peopleTransported: gameProgress.peopleTransported + 1,
+                  score: gameProgress.score + 100 
+                })}
+              >
+                Transport Person (+100)
+              </Button>
+              
+              <Button
+                variant="contained"
+                color="secondary"
+                startIcon={<Construction />}
+                onClick={() => updateProgress({ 
+                  potholesFilled: gameProgress.potholesFilled + 1,
+                  score: gameProgress.score + 50 
+                })}
+              >
+                Fill Pothole (+50)
+              </Button>
+              
+              <Button
+                variant="outlined"
+                onClick={() => updateProgress({ 
+                  movesUsed: gameProgress.movesUsed + 1 
+                })}
+              >
+                Use Move
+              </Button>
+            </Box>
+
+            {/* Mock Level Completion */}
+            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
+              <Button
+                variant="contained"
+                color="success"
+                size="large"
+                onClick={handleMockComplete}
+              >
+                Complete Level (Mock)
+              </Button>
+              
+              <Button
+                variant="contained"
+                color="error"
+                size="large"
+                onClick={handleMockFail}
+              >
+                Fail Level (Mock)
+              </Button>
+            </Box>
+
+            {/* Game State Display */}
+            <Card sx={{ mt: 4, maxWidth: 600, margin: '0 auto' }}>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  Current Game State
+                </Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  <Typography>State: {gameProgress.gameState}</Typography>
+                  <Typography>Score: {gameProgress.score}</Typography>
+                  <Typography>People Transported: {gameProgress.peopleTransported} / {currentLevel.objectives.peopleToTransport}</Typography>
+                  <Typography>Potholes Filled: {gameProgress.potholesFilled} / {currentLevel.objectives.potholesToFill || 0}</Typography>
+                  <Typography>Moves Used: {gameProgress.movesUsed}</Typography>
+                  {gameProgress.timeRemaining !== undefined && (
+                    <Typography>Time Remaining: {gameProgress.timeRemaining}s</Typography>
+                  )}
+                </Box>
+              </CardContent>
+            </Card>
+          </Container>
+        </Box>
+
+        {/* Level Completion Dialog */}
+        <LevelCompleteDialog
+          open={showCompletionDialog}
+          gameProgress={gameProgress}
+          level={currentLevel}
+          onNextLevel={handleNextLevel}
+          onRetry={handleRetryLevel}
+          onReturnToMenu={handleReturnToMenu}
+        />
+      </Box>
+    );
+  }
+
+  // Fallback
+  return (
+    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Typography variant="h6">Loading...</Typography>
+    </Box>
   );
 };
