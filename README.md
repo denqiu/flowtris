@@ -1,4 +1,12 @@
-## Devvit React Starter
+# Dev Notes
+
+- Node version: 22.19.0
+- [PRD (Project Requirements Document)](PRD.md) outlining what to do.
+- Tasks: See [Issues](https://github.com/denqiu/flowtris/issues).
+
+---
+
+# Devvit React Starter
 
 A starter to build web applications on Reddit's developer platform
 
@@ -9,7 +17,7 @@ A starter to build web applications on Reddit's developer platform
 - [Tailwind](https://tailwindcss.com/): For styles
 - [Typescript](https://www.typescriptlang.org/): For type safety
 
-## Getting Started
+# Getting Started
 
 > Make sure you have Node 22 downloaded on your machine before running!
 
@@ -17,7 +25,7 @@ A starter to build web applications on Reddit's developer platform
 2. Go through the installation wizard. You will need to create a Reddit account and connect it to Reddit developers
 3. Copy the command on the success page into your terminal
 
-## Commands
+# Commands
 
 - `npm run dev`: Starts a development server where you can develop your application live on Reddit.
 - `npm run build`: Builds your client and server projects
@@ -26,6 +34,6 @@ A starter to build web applications on Reddit's developer platform
 - `npm run login`: Logs your CLI into Reddit
 - `npm run check`: Type checks, lints, and prettifies your app
 
-## Cursor Integration
+# Cursor Integration
 
 This template comes with a pre-configured cursor environment. To get started, [download cursor](https://www.cursor.com/downloads) and enable the `devvit-mcp` when prompted.
