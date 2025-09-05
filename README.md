@@ -1,8 +1,12 @@
 # Dev Notes
 
 - Node version: 22.19.0
-- [PRD (Project Requirements Document)](PRD.md) outlining what to do.
-- Tasks: See [Issues](https://github.com/denqiu/flowtris/issues).
+- [PRD (Project Requirements Document)](PRD.md)
+- Tasks: See [Issues](https://github.com/denqiu/flowtris/issues)
+
+# References
+
+- [React.FC](https://dev.to/elhamnajeebullah/react-typescript-what-is-reactfc-and-why-should-i-use-it-4029)
 
 ---
 
