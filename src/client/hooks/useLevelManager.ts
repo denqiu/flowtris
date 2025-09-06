@@ -68,10 +68,16 @@ export const useLevelManager = () => {
       return false;
     }
 
+    // Clear any existing timer before starting new level
+    if (gameTimerRef.current) {
+      clearInterval(gameTimerRef.current);
+      gameTimerRef.current = null;
+    }
+
     const gameProgress: GameProgress = {
       currentLevel: levelId,
       score: 0,
-      timeRemaining: level.timeLimit,
+      timeRemaining: level.timeLimit || undefined,
       peopleTransported: 0,
       potholesFilled: 0,
       movesUsed: 0,
