@@ -6,6 +6,7 @@ import LevelSelector from './components/LevelSelector';
 import GameHUD from './components/GameHUD';
 import CityGrid from './components/CityGrid';
 import LevelCompleteDialog from './components/LevelCompleteDialog';
+import { DemoControls } from './components/DemoControls';
 import { GameState } from './shared/types/level';
 
 export const App = () => {
@@ -130,61 +131,23 @@ export const App = () => {
               />
             </Box>
 
-            {/* Mock Game Controls */}
-            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 4 }}>
-              <Button
-                variant="contained"
-                color="success"
-                startIcon={<People />}
-                onClick={() => updateProgress({ 
+            {/* Demo Controls */}
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+              <DemoControls
+                onTransportPerson={() => updateProgress({ 
                   peopleTransported: gameProgress.peopleTransported + 1,
                   score: gameProgress.score + 100 
                 })}
-              >
-                Transport Person (+100)
-              </Button>
-              
-              <Button
-                variant="contained"
-                color="secondary"
-                startIcon={<Construction />}
-                onClick={() => updateProgress({ 
+                onFillPothole={() => updateProgress({ 
                   potholesFilled: gameProgress.potholesFilled + 1,
                   score: gameProgress.score + 50 
                 })}
-              >
-                Fill Pothole (+50)
-              </Button>
-              
-              <Button
-                variant="outlined"
-                onClick={() => updateProgress({ 
+                onUseMove={() => updateProgress({ 
                   movesUsed: gameProgress.movesUsed + 1 
                 })}
-              >
-                Use Move
-              </Button>
-            </Box>
-
-            {/* Mock Level Completion */}
-            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
-              <Button
-                variant="contained"
-                color="success"
-                size="large"
-                onClick={handleMockComplete}
-              >
-                Complete Level (Mock)
-              </Button>
-              
-              <Button
-                variant="contained"
-                color="error"
-                size="large"
-                onClick={handleMockFail}
-              >
-                Fail Level (Mock)
-              </Button>
+                onComplete={handleMockComplete}
+                onFail={handleMockFail}
+              />
             </Box>
 
             {/* Game State Display */}
