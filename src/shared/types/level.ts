@@ -60,3 +60,4 @@ export interface LevelPack {
   unlocked: boolean;
   requiredStars: number; // stars needed to unlock this pack
 }
+

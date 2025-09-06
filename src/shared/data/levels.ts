@@ -199,3 +199,4 @@ export const getLevelsByPack = (packId: string): LevelConfig[] => {
 export const getUnlockedPacks = (totalStars: number): LevelPack[] => {
   return LEVEL_PACKS.filter(pack => pack.requiredStars <= totalStars);
 };
+

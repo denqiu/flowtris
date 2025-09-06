@@ -417,3 +417,4 @@ export const useLevelManager = () => {
     isLevelUnlocked,
   };
 };
+
