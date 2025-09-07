@@ -1,14 +1,14 @@
 import { navigateTo } from '@devvit/web/client';
 import { useCounter } from './hooks/useCounter';
-import CityGrid, { SizeTest } from './components/CityGrid';
+import CityGrid, { TestCityGrid } from './components/CityGrid';
 
 export const App = () => {
   const { count, username, loading, increment, decrement } = useCounter();
   return (
     <div className="flex relative flex-col justify-center items-center min-h-screen gap-4">
       <div className="flex flex-col items-center gap-2">
-        {/* <CityGrid rows={10} columns={10} /> */}
-        <SizeTest />
+        <CityGrid rows={10} columns={10} />
+        <TestCityGrid />
       </div>
       <img className="object-contain w-1/2 max-w-[250px] mx-auto" src="/snoo.png" alt="Snoo" />
       <div className="flex flex-col items-center gap-2">

@@ -2,7 +2,7 @@ import express from 'express';
 import { InitResponse, IncrementResponse, DecrementResponse } from '../shared/types/api';
 import { redis, reddit, createServer, context, getServerPort } from '@devvit/web/server';
 import { createPost } from './core/post';
-import AStarGrid from './astar/astar-grid';
+import * as Grid from './grid';
 
 const app = express();
 
@@ -15,7 +15,7 @@ app.use(express.text());
 
 const router = express.Router();
 
-AStarGrid(router);
+Grid.AStar(router);
 
 router.get<{ postId: string }, InitResponse | { status: string; message: string }>(
   '/api/init',

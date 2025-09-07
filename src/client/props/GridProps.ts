@@ -1,7 +1,7 @@
-import type { AStarRequest } from "../../shared/types/grid-props";
+import type { MatrixRequest } from "../../shared/types/grid";
 
-// Partial applies ? to all fields in AStarRequest
-export interface GridProps extends Partial<AStarRequest> {
+// Partial applies ? to all fields in MatrixRequest
+export interface GridProps extends Partial<MatrixRequest> {
   rows?: number;
   columns?: number;
 }
