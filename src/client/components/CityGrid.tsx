@@ -7,17 +7,29 @@ import { MatrixRequest } from "../../shared/types/grid";
 
 /**
  * Render grid with A* path if matrix, startPoint, and endPoint are provided. Otherwise don't update render.
+ * 0 = Open cell (Walkable), 1 = Closed cell (Obstacle), 2+ = Path cell from start to finish
  */
-const CityGrid: React.FC<GridProps> = ({ rows, columns, matrix, startPoint, endPoint }) => {
-    const { matrixWithPath, updateRender, isLoading, error, fetchAStar } = useAStar();
+const CityGrid: React.FC<GridProps> = ({ rows, columns, obstacles, matrix, startPoint, endPoint }) => {
+    const { matrixWithPath, updateRender, error, fetchAStar } = useAStar();
     useEffect(() => {
         void fetchAStar({matrix, startPoint, endPoint} as MatrixRequest);
     }, [fetchAStar, matrix, startPoint, endPoint]);
     if (rows && columns) {
-        matrix = Array.from({ length: rows }, () => Array(columns).fill(1));
+        matrix = Array.from({ length: rows }, () => Array(columns).fill(0));
     }
     if (!matrix) {
         return <div>Invalid arguments</div>;
+    }
+    obstacles?.forEach(([y, x]) => {
+        if (matrix[x]) {
+            matrix[x][y] = 1; 
+        }
+    });
+    if (!rows && matrix) {
+        rows = matrix.length;
+    }
+    if (!columns && matrix?.[0]) {
+        columns = matrix[0].length; 
     }
     const cells = [] as React.ReactNode[];
     (updateRender ? matrixWithPath : matrix).forEach((row, rowIndex) => {
@@ -31,18 +43,21 @@ const CityGrid: React.FC<GridProps> = ({ rows, columns, matrix, startPoint, endP
             );
         });
     });   
-    // TODO: Add loading screen onto empty grid
-    // TODO: Add error above grid.
+    // TODO: Add loading screen onto empty grid while calculating path.
     return (
-        <Box sx={{ 
-            display: 'grid', 
-            gridTemplateColumns: `repeat(${columns}, 1fr)`, 
-            gap: 1,
-            maxWidth: '600px', // Set max width
-            margin: '0 auto'   // Center the grid
-        }}>
-            {cells}
-        </Box>
+        <div>
+            {error && <p>{error}</p>}
+            <Box sx={{ 
+                display: 'grid', 
+                gridTemplateColumns: `repeat(${columns}, 1fr)`, 
+                gap: 1,
+                maxWidth: '600px', // Set max width
+                margin: '0 auto'   // Center the grid
+            }}>
+                {cells}
+            </Box>
+        </div>
+        
     );
 };
 
@@ -51,6 +66,11 @@ const CityGrid: React.FC<GridProps> = ({ rows, columns, matrix, startPoint, endP
  */
 const TestCityGrid: React.FC = () => {
     const grids = [
+        {},
+        // { rows: 6, columns: 4, startPoint: [0, 3], endPoint: [3, 0] },
+        { rows: 6, columns: 4, startPoint: [0, 3], endPoint: [3, 0], obstacles: [
+            [0, 0], [1, 1]
+        ]},
         { rows: 2, columns: 2 },
         { rows: 3, columns: 5 },
         { rows: 5, columns: 8 },
@@ -63,9 +83,11 @@ const TestCityGrid: React.FC = () => {
     ];
     return (
         <React.Fragment>
-            {grids.map(grid => (
-                <CityGrid {...grid} />
-            ))}
+            {grids.map(grid => {
+                return (
+                    <CityGrid {...grid} />
+                )
+            })}
         </React.Fragment>
     );
 };

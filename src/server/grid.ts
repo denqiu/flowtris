@@ -8,15 +8,16 @@ function AStar(router: express.Router) {
         MatrixResponse | { status: string; message: string }, // Response type
         Required<MatrixRequest> // Request type
     >
-    ('/grid/astar', async (req, res): Promise<void> => {
+    ('/api/grid/astar', async (req, res): Promise<void> => {
         try {
             const { matrix, startPoint, endPoint } = req.body;
             const grid = new PF.Grid(matrix);
             const finder = new PF.AStarFinder();
             const path = finder.findPath(...startPoint, ...endPoint, grid) as [number, number][];
-            path.forEach(([x, y]) => {
+            let pathCounter = 2
+            path.forEach(([y, x]) => {
                 if (matrix[x]) {
-                    matrix[x][y] = 0; 
+                    matrix[x][y] = pathCounter++; 
                 }
             });
             res.json({
