@@ -127,11 +127,7 @@ export const App = () => {
 
             {/* Game Grid */}
             <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
-              <CityGrid
-                rows={currentLevel.gridSize.rows}
-                columns={currentLevel.gridSize.columns}
-              />
-              {/* <CityGrid rows={10} columns={10} /> */}
+              <CityGrid {...currentLevel.gridProps} />
               {/* <TestCityGrid /> */}
             </Box>
 

@@ -311,7 +311,7 @@ const LevelSelector: React.FC<LevelSelectorProps> = ({
                   Level Details
                 </Typography>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                  <Typography>Grid Size: {selectedLevel.gridSize.rows} × {selectedLevel.gridSize.columns}</Typography>
+                  <Typography>Grid Size: {selectedLevel.gridProps.rows} × {selectedLevel.gridProps.columns}</Typography>
                   <Typography>Difficulty: {selectedLevel.difficulty}</Typography>
                   <Typography>Mode: {selectedLevel.gameMode}</Typography>
                   {selectedLevel.timeLimit && (

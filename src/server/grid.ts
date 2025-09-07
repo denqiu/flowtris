@@ -14,7 +14,7 @@ function AStar(router: express.Router) {
             const grid = new PF.Grid(matrix);
             const finder = new PF.AStarFinder();
             const path = finder.findPath(...startPoint, ...endPoint, grid) as [number, number][];
-            let pathCounter = 2
+            let pathCounter = 2;
             path.forEach(([y, x]) => {
                 if (matrix[x]) {
                     matrix[x][y] = pathCounter++; 
