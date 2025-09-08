@@ -2,8 +2,13 @@
  * icon type refers to <Icon> element and component type refers to component from @mui/icons-material.
  */
 export const ICONS = {
-    ROAD: { type: 'icon', value: 'road' },
-    POTHOLE: { type: 'component', name: 'BrightnessOutlinedIcon' }
+    ROAD: { type: 'component', name: 'RoadIcon', directions: ['north', 'south', 'east', 'west'] },
+    POTHOLE: { type: 'component', name: 'BrightnessOutlinedIcon' },
+    CAR: { type: 'component', name: 'DirectionsCarIcon', directions: ['north', 'south', 'east', 'west'] },
+    BUS: { type: 'component', name: 'DirectionsBusIcon', directions: ['north', 'south', 'east', 'west'] },
+    BUILDING: { type: 'component', name: 'BusinessIcon' },
+    TREE: { type: 'component', name: 'ParkIcon' },
+    CITY: { type: 'component', name: 'LocationCityIcon' }
 };
 
 export type IconKey = keyof typeof ICONS;
@@ -22,7 +27,11 @@ export type MatrixRequest = {
 export interface GridProps extends Partial<MatrixRequest> {
     rows?: number;
     columns?: number;
-    obstacles?: { iconKey: IconKey; points: [number, number][] }[];
+    obstacles?: { iconKey: IconKey; points: [number, number][]; direction?: string; lane?: 'fast' | 'slow' }[];
+    lanes?: {
+        fast: { startRow: number; endRow: number };
+        slow: { startRow: number; endRow: number };
+    };
 }
 
 /**
