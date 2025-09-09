@@ -2,13 +2,14 @@
  * icon type refers to <Icon> element and component type refers to component from @mui/icons-material.
  */
 export const ICONS = {
-    ROAD: { type: 'component', name: 'RoadIcon', directions: ['north', 'south', 'east', 'west'] },
+    // ROAD: { type: 'component', name: 'RoadIcon', directions: ['north', 'south', 'east', 'west'] },
+    ROAD: { type: 'icon', name: 'road' },
     POTHOLE: { type: 'component', name: 'BrightnessOutlinedIcon' },
-    CAR: { type: 'component', name: 'DirectionsCarIcon', directions: ['north', 'south', 'east', 'west'] },
-    BUS: { type: 'component', name: 'DirectionsBusIcon', directions: ['north', 'south', 'east', 'west'] },
-    BUILDING: { type: 'component', name: 'BusinessIcon' },
-    TREE: { type: 'component', name: 'ParkIcon' },
-    CITY: { type: 'component', name: 'LocationCityIcon' }
+    // CAR: { type: 'component', name: 'DirectionsCarIcon', directions: ['north', 'south', 'east', 'west'] },
+    // BUS: { type: 'component', name: 'DirectionsBusIcon', directions: ['north', 'south', 'east', 'west'] },
+    // BUILDING: { type: 'component', name: 'BusinessIcon' },
+    // TREE: { type: 'component', name: 'ParkIcon' },
+    // CITY: { type: 'component', name: 'LocationCityIcon' }
 };
 
 export type IconKey = keyof typeof ICONS;
@@ -27,15 +28,16 @@ export type MatrixRequest = {
 export interface GridProps extends Partial<MatrixRequest> {
     rows?: number;
     columns?: number;
-    obstacles?: { iconKey: IconKey; points: [number, number][]; direction?: string; lane?: 'fast' | 'slow' }[];
-    lanes?: {
-        fast: { startRow: number; endRow: number };
-        slow: { startRow: number; endRow: number };
-    };
+    obstacles?: { iconKey: IconKey; points: [number, number][] }[];
+    // obstacles?: { iconKey: IconKey; points: [number, number][]; direction?: string; lane?: 'fast' | 'slow' }[];
+    // lanes?: {
+    //     fast: { startRow: number; endRow: number };
+    //     slow: { startRow: number; endRow: number };
+    // };
 }
 
 /**
- * Ensure that grid props has defined rows, columns, and matrix. obstacles, startPoint and endPoint are left as is. Otherwise leave props as is.
+ * Ensure that grid props has defined rows, columns, and matrix. obstacles, startPoint and endPoint are left as is.
  * 0 = Open cell (Walkable), 1 = Closed cell (Obstacle), 2+ = Path cell from start to finish (in server/grid)
  */
 export const InitGridProps = (props: GridProps) => {
@@ -50,6 +52,7 @@ export const InitGridProps = (props: GridProps) => {
         matrix = Array.from({ length: rows }, () => Array(columns).fill(0));
     }
     if (!matrix) {
+        // Leave props as is. Let CityGrid use !matrix.
         return props;
     }
     props.obstacles?.flatMap(obstacle => obstacle.points).forEach(([y, x]) => {

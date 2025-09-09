@@ -17,7 +17,7 @@ const renderIcon = (iconKey: IconKey, direction?: string) => {
             return <IconComponent sx={{ transform: `rotate(${rotation}deg)` }} />;
         }
     }
-    return icon.value || iconKey;
+    return icon.name || iconKey;
 };
 
 /**
@@ -37,7 +37,8 @@ const getRotationForDirection = (direction: string): number => {
  * Render grid with A* path if matrix, startPoint, and endPoint are provided. Otherwise don't update render.
  * Assume grid props to be already initialized.
  */
-const CityGrid: React.FC<GridProps> = ({ rows, columns, matrix, obstacles, startPoint, endPoint, lanes }) => {
+// const CityGrid: React.FC<GridProps> = ({ rows, columns, matrix, obstacles, startPoint, endPoint, lanes }) => {
+const CityGrid: React.FC<GridProps> = ({ rows, columns, matrix, obstacles, startPoint, endPoint }) => {
     const { matrixWithPath, updateRender, error, fetchAStar } = useAStar();
     useEffect(() => {
         void fetchAStar({matrix, startPoint, endPoint} as MatrixRequest);
@@ -46,29 +47,29 @@ const CityGrid: React.FC<GridProps> = ({ rows, columns, matrix, obstacles, start
         return <div>Invalid arguments</div>;
     }
     // Create matrix for icons with proper coordinate mapping
-    const matrixIcons: (object | null)[][] = Array.from({ length: rows }, () => Array(columns).fill(null));
-    obstacles?.forEach(obstacle => {
-        obstacle.points.forEach(([row, col]) => {
-            if (matrixIcons[row] && matrixIcons[row][col] !== undefined) {
-                matrixIcons[row][col] = {
-                    iconKey: obstacle.iconKey,
-                    direction: obstacle.direction,
-                    lane: obstacle.lane
-                }; 
-            }
-        });
-    });
+    // const matrixIcons: (object | null)[][] = Array.from({ length: rows }, () => Array(columns).fill(null));
+    // obstacles?.forEach(obstacle => {
+    //     obstacle.points.forEach(([row, col]) => {
+    //         if (matrixIcons[row] && matrixIcons[row][col] !== undefined) {
+    //             matrixIcons[row][col] = {
+    //                 iconKey: obstacle.iconKey,
+    //                 direction: obstacle.direction,
+    //                 lane: obstacle.lane
+    //             }; 
+    //         }
+    //     });
+    // });
     const cells = [] as React.ReactNode[];
     (updateRender ? matrixWithPath : matrix).forEach((row, rowIndex) => {
         row.forEach((cellValue, columnIndex) => {
-            const iconData = matrixIcons[rowIndex][columnIndex] as any;
-            const isInFastLane = lanes?.fast && rowIndex >= lanes.fast.startRow && rowIndex <= lanes.fast.endRow;
-            const isInSlowLane = lanes?.slow && rowIndex >= lanes.slow.startRow && rowIndex <= lanes.slow.endRow;
+            // const iconData = matrixIcons[rowIndex][columnIndex] as any;
+            // const isInFastLane = lanes?.fast && rowIndex >= lanes.fast.startRow && rowIndex <= lanes.fast.endRow;
+            // const isInSlowLane = lanes?.slow && rowIndex >= lanes.slow.startRow && rowIndex <= lanes.slow.endRow;
             
             // Determine cell background color based on lane
-            let backgroundColor = '#f5f5f5'; // Default
-            if (isInFastLane) backgroundColor = '#e3f2fd'; // Light blue for fast lane
-            if (isInSlowLane) backgroundColor = '#f3e5f5'; // Light purple for slow lane
+            // let backgroundColor = '#f5f5f5'; // Default
+            // if (isInFastLane) backgroundColor = '#e3f2fd'; // Light blue for fast lane
+            // if (isInSlowLane) backgroundColor = '#f3e5f5'; // Light purple for slow lane
             
             cells.push(
                 <Box key={`${rowIndex}-${columnIndex}`}> 
@@ -79,12 +80,16 @@ const CityGrid: React.FC<GridProps> = ({ rows, columns, matrix, obstacles, start
                             display: 'flex', 
                             alignItems: 'center', 
                             justifyContent: 'center',
-                            backgroundColor: backgroundColor,
-                            border: cellValue >= 2 ? '2px solid #4caf50' : '1px solid #ddd' // Green border for path
+                            // backgroundColor: backgroundColor,
+                            // border: cellValue >= 2 ? '2px solid #4caf50' : '1px solid #ddd' // Green border for path
                         }}
                     >
-                        {iconData ? renderIcon(iconData.iconKey, iconData.direction) : 
-                         cellValue >= 2 ? '🚗' : cellValue === 1 ? '🚧' : ''}
+                        {/* {iconData ? renderIcon(iconData.iconKey, iconData.direction) : 
+                         cellValue >= 2 ? '🚗' : cellValue === 1 ? '🚧' : ''} */}
+
+                         {/* {matrixIcons[columnIndex][rowIndex] ? 'get <Icon> or Mui Icon' : cellValue} */}
+
+                         {cellValue}
                     </Paper>
                 </Box>
             );
