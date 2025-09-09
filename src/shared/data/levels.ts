@@ -1,6 +1,7 @@
+import { InitGridProps } from '../types/grid';
 import { LevelConfig, LevelPack, Difficulty, GameMode } from '../types/level';
 
-// Predefined level configurations
+// Predefined level configurations.
 export const LEVELS: LevelConfig[] = [
   // Easy Levels
   {
@@ -9,7 +10,19 @@ export const LEVELS: LevelConfig[] = [
     description: 'Learn the basics of road planning',
     difficulty: 'easy',
     gameMode: 'unlimited',
-    gridSize: { rows: 6, columns: 8 },
+    gridProps: {
+      rows: 6,
+      columns: 8,
+      obstacles: [
+        { iconKey: 'POTHOLE', points: [[2, 3], [4,3], [5,6]] },
+        // { iconKey: 'ROAD', points: [[1, 1], [1, 2], [1, 3]], direction: 'east' },
+        // { iconKey: 'BUILDING', points: [[0, 0], [0, 7]] }
+      ],
+      // lanes: {
+      //   fast: { startRow: 0, endRow: 2 },
+      //   slow: { startRow: 3, endRow: 5 }
+      // }
+    },
     objectives: {
       peopleToTransport: 3,
       potholesToFill: 0,
@@ -24,7 +37,7 @@ export const LEVELS: LevelConfig[] = [
     description: 'Fill your first pothole',
     difficulty: 'easy',
     gameMode: 'unlimited',
-    gridSize: { rows: 6, columns: 8 },
+    gridProps: { rows: 6, columns: 8 },
     objectives: {
       peopleToTransport: 2,
       potholesToFill: 1,
@@ -41,7 +54,7 @@ export const LEVELS: LevelConfig[] = [
     difficulty: 'easy',
     gameMode: 'timed',
     timeLimit: 60,
-    gridSize: { rows: 6, columns: 8 },
+    gridProps: { rows: 6, columns: 8 },
     objectives: {
       peopleToTransport: 4,
       potholesToFill: 1,
@@ -60,7 +73,7 @@ export const LEVELS: LevelConfig[] = [
     difficulty: 'medium',
     gameMode: 'timed',
     timeLimit: 90,
-    gridSize: { rows: 8, columns: 10 },
+    gridProps: { rows: 8, columns: 10 },
     objectives: {
       peopleToTransport: 6,
       potholesToFill: 3,
@@ -78,7 +91,21 @@ export const LEVELS: LevelConfig[] = [
     difficulty: 'medium',
     gameMode: 'timed',
     timeLimit: 120,
-    gridSize: { rows: 8, columns: 12 },
+    gridProps: { 
+      rows: 8, 
+      columns: 12,
+      // obstacles: [
+      //   { iconKey: 'ROAD', points: [[1, 0], [1, 1], [1, 2], [1, 3]], direction: 'east' },
+      //   { iconKey: 'ROAD', points: [[5, 8], [5, 9], [5, 10], [5, 11]], direction: 'east' },
+      //   { iconKey: 'CAR', points: [[1, 0]], direction: 'east', lane: 'fast' },
+      //   { iconKey: 'BUS', points: [[5, 8]], direction: 'east', lane: 'slow' },
+      //   { iconKey: 'TREE', points: [[0, 6], [7, 6]] }
+      // ],
+      // lanes: {
+      //   fast: { startRow: 0, endRow: 3 },
+      //   slow: { startRow: 4, endRow: 7 }
+      // }
+    },
     objectives: {
       peopleToTransport: 8,
       potholesToFill: 5,
@@ -98,7 +125,7 @@ export const LEVELS: LevelConfig[] = [
     difficulty: 'hard',
     gameMode: 'timed',
     timeLimit: 150,
-    gridSize: { rows: 10, columns: 12 },
+    gridProps: { rows: 10, columns: 12 },
     objectives: {
       peopleToTransport: 12,
       potholesToFill: 8,
@@ -116,7 +143,7 @@ export const LEVELS: LevelConfig[] = [
     difficulty: 'hard',
     gameMode: 'timed',
     timeLimit: 180,
-    gridSize: { rows: 12, columns: 14 },
+    gridProps: { rows: 12, columns: 14 },
     objectives: {
       peopleToTransport: 15,
       potholesToFill: 12,
@@ -135,7 +162,7 @@ export const LEVELS: LevelConfig[] = [
     description: 'See how far you can go!',
     difficulty: 'endless',
     gameMode: 'endless',
-    gridSize: { rows: 8, columns: 10 },
+    gridProps: { rows: 8, columns: 10 },
     objectives: {
       peopleToTransport: 999, // High number for endless
     },
@@ -145,6 +172,10 @@ export const LEVELS: LevelConfig[] = [
     rewards: { points: 0, stars: 0 }, // Dynamic scoring
   },
 ];
+
+for (const level of LEVELS) {
+  level.gridProps = InitGridProps(level.gridProps);
+}
 
 // Level packs for progression
 export const LEVEL_PACKS: LevelPack[] = [
