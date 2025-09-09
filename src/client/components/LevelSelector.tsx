@@ -33,6 +33,8 @@ interface LevelSelectorProps {
   levelStats: Map<string, LevelStats>;
   totalStars: number;
   isLevelUnlocked: (levelId: string) => boolean;
+  selectedPack?: string;
+  setSelectedPack?: (packId: string) => void;
 }
 
 const LevelSelector: React.FC<LevelSelectorProps> = ({
@@ -41,7 +43,7 @@ const LevelSelector: React.FC<LevelSelectorProps> = ({
   totalStars,
   isLevelUnlocked,
 }) => {
-  const [selectedPack, setSelectedPack] = useState<string>('tutorial');
+  const [internalSelectedPack, setInternalSelectedPack] = useState<string>(selectedPack || 'tutorial');
   const [selectedLevel, setSelectedLevel] = useState<LevelConfig | null>(null);
   const [levelDetailsOpen, setLevelDetailsOpen] = useState(false);
 
@@ -129,13 +131,16 @@ const LevelSelector: React.FC<LevelSelectorProps> = ({
               <Card
                 sx={{
                   cursor: 'pointer',
-                  border: selectedPack === pack.id ? 2 : 1,
-                  borderColor: selectedPack === pack.id ? 'primary.main' : 'divider',
+                  border: internalSelectedPack === pack.id ? 2 : 1,
+                  borderColor: internalSelectedPack === pack.id ? 'primary.main' : 'divider',
                   '&:hover': {
                     boxShadow: 4,
                   },
                 }}
-                onClick={() => setSelectedPack(pack.id)}
+                onClick={() => {
+                  setInternalSelectedPack(pack.id);
+                  if (setSelectedPack) setSelectedPack(pack.id);
+                }}
               >
                 <CardContent>
                   <Typography variant="h6" component="h2" gutterBottom>
@@ -164,10 +169,10 @@ const LevelSelector: React.FC<LevelSelectorProps> = ({
       {/* Level Grid */}
       <Box>
         <Typography variant="h6" gutterBottom>
-          {LEVEL_PACKS.find(pack => pack.id === selectedPack)?.name} Levels
+          {LEVEL_PACKS.find(pack => pack.id === internalSelectedPack)?.name} Levels
         </Typography>
         <Grid container spacing={2}>
-          {getLevelsForPack(selectedPack).map((level) => {
+          {getLevelsForPack(internalSelectedPack).map((level) => {
             const progress = getLevelProgress(level.id);
             const unlocked = isLevelUnlocked(level.id);
             
@@ -220,11 +225,14 @@ const LevelSelector: React.FC<LevelSelectorProps> = ({
                     {/* Level Stats */}
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <People fontSize="small" />
-                        <Typography variant="body2">
-                          {level.objectives.peopleToTransport}
+                          <People fontSize="small" />
+                          <Typography variant="body2">
+                            {level.objectives.peopleToTransport}
+                          </Typography>
+                        </Box>
+                        <Typography variant="body2" color="text.secondary">
+                          {progress.completed ? progress.stars + ' stars' : `0`}
                         </Typography>
-                      </Box>
                       {level.objectives.potholesToFill && level.objectives.potholesToFill > 0 && (
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                           <Construction fontSize="small" />
@@ -327,13 +335,13 @@ const LevelSelector: React.FC<LevelSelectorProps> = ({
                 <Typography variant="h6" gutterBottom>
                   Rewards
                 </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography>Points: {selectedLevel.rewards.points}</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <Typography>Stars:</Typography>
-                    {renderStars(0, selectedLevel.rewards.stars)}
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <Typography>Stars:</Typography>
+                      {renderStars(getLevelProgress(selectedLevel.id).stars, selectedLevel.rewards.stars)}
+                    </Box>
+                    <Typography variant="body2" color="text.secondary">Best: {getLevelProgress(selectedLevel.id).bestScore || 0}</Typography>
                   </Box>
-                </Box>
               </Box>
             </Box>
           )}

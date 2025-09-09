@@ -1,1 +1,7 @@
 @import 'tailwindcss';
+
+:root {
+	--color-transport: #2e7d32; /* green */
+	--color-pothole: #ef6c00; /* orange */
+	--color-hint: #1e88e5; /* blue */
+}

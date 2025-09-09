@@ -43,7 +43,7 @@ const GameHUD: React.FC<GameHUDProps> = ({
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const getTimeColor = (timeRemaining?: number, timeLimit?: number): string => {
+  const getTimeColor = (timeRemaining?: number, timeLimit?: number): 'primary' | 'success' | 'warning' | 'error' => {
     if (!timeRemaining || !timeLimit) return 'primary';
     
     const percentage = timeRemaining / timeLimit;
@@ -123,18 +123,20 @@ const GameHUD: React.FC<GameHUDProps> = ({
               </Box>
               <Typography variant="body2" color="text.secondary">
                 {gameProgress.peopleTransported} / {gameProgress.currentLevel ? 
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   (gameProgress.currentLevel as any).objectives?.peopleToTransport || 0 : 0}
               </Typography>
             </Box>
-            <LinearProgress
+      <LinearProgress
               variant="determinate"
               value={gameProgress.currentLevel ? 
                 getProgressPercentage(
                   gameProgress.peopleTransported,
-                  (gameProgress.currentLevel as any).objectives?.peopleToTransport || 1
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (gameProgress.currentLevel as any).objectives?.peopleToTransport || 1
                 ) : 0
               }
-              sx={{ height: 8, borderRadius: 4 }}
+        sx={{ height: 8, borderRadius: 4, '& .MuiLinearProgress-bar': { backgroundColor: 'var(--color-transport)' } }}
             />
           </Box>
 
@@ -149,19 +151,20 @@ const GameHUD: React.FC<GameHUDProps> = ({
               </Box>
               <Typography variant="body2" color="text.secondary">
                 {gameProgress.potholesFilled} / {gameProgress.currentLevel ? 
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   (gameProgress.currentLevel as any).objectives?.potholesToFill || 0 : 0}
               </Typography>
             </Box>
-            <LinearProgress
+      <LinearProgress
               variant="determinate"
               value={gameProgress.currentLevel ? 
                 getProgressPercentage(
                   gameProgress.potholesFilled,
-                  (gameProgress.currentLevel as any).objectives?.potholesToFill || 1
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (gameProgress.currentLevel as any).objectives?.potholesToFill || 1
                 ) : 0
               }
-              color="secondary"
-              sx={{ height: 8, borderRadius: 4 }}
+        sx={{ height: 8, borderRadius: 4, '& .MuiLinearProgress-bar': { backgroundColor: 'var(--color-pothole)' } }}
             />
           </Box>
         </Box>
@@ -172,12 +175,14 @@ const GameHUD: React.FC<GameHUDProps> = ({
           {gameProgress.timeRemaining !== undefined && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Timer color={getTimeColor(gameProgress.timeRemaining, gameProgress.currentLevel ? 
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 (gameProgress.currentLevel as any).timeLimit : undefined)} />
               <Typography
                 variant="h6"
                 sx={{
                   fontWeight: 'bold',
                   color: getTimeColor(gameProgress.timeRemaining, gameProgress.currentLevel ? 
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     (gameProgress.currentLevel as any).timeLimit : undefined) === 'error' ? 'error.main' : 'text.primary'
                 }}
               >
@@ -188,22 +193,11 @@ const GameHUD: React.FC<GameHUDProps> = ({
 
           {/* Game State Indicator */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Chip
-              label={gameState.toUpperCase()}
-              color={
-                gameState === 'playing' ? 'success' :
-                gameState === 'paused' ? 'warning' :
-                gameState === 'completed' ? 'primary' :
-                'error'
-              }
-              size="small"
-            />
-            
-            {/* Moves Used */}
-            <Typography variant="body2" color="text.secondary">
-              Moves: {gameProgress.movesUsed}
-            </Typography>
-          </Box>
+              {/* Moves Left (Hints) */}
+              <Typography variant="body2" color="text.secondary">
+                Moves left: {gameProgress.movesLeft === null || gameProgress.movesLeft === undefined ? '∞' : gameProgress.movesLeft}
+              </Typography>
+            </Box>
 
           {/* Stars Earned */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
