@@ -1,3 +1,5 @@
+import { GridProps } from './grid';
+
 export type Difficulty = 'easy' | 'medium' | 'hard' | 'endless';
 
 export type GameMode = 'timed' | 'unlimited' | 'endless';
@@ -11,10 +13,7 @@ export interface LevelConfig {
   difficulty: Difficulty;
   gameMode: GameMode;
   timeLimit?: number; // in seconds, undefined for unlimited
-  gridSize: {
-    rows: number;
-    columns: number;
-  };
+  gridProps: GridProps;
   objectives: {
     peopleToTransport: number;
     potholesToFill?: number;
