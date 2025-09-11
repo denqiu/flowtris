@@ -14,7 +14,7 @@ export const LEVELS: LevelConfig[] = [
       rows: 6,
       columns: 8,
       obstacles: [
-        { iconKey: 'POTHOLE', points: [[2, 3], [4,3], [5,6]] },
+        { iconKey: 'POTHOLE', points: [[2, 3], [4,3], [5,5]] },
         // { iconKey: 'ROAD', points: [[1, 1], [1, 2], [1, 3]], direction: 'east' },
         // { iconKey: 'BUILDING', points: [[0, 0], [0, 7]] }
       ],

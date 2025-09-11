@@ -1,10 +1,16 @@
 /**
- * icon type refers to <Icon> element and component type refers to component from @mui/icons-material.
+ * symbol type refers to <span> element symbol and component type refers to component from mui/icons-material.
+ * 
+ * Use MuiIcons in CityGrid to find actual name for icon components. It looks like name doesn't need to end with 'Icon'.
+ * 
+ * References:
+ * @link Symbols {https://fonts.google.com/icons}
+ * @link Components {https://mui.com/material-ui/material-icons/}
  */
 export const ICONS = {
     // ROAD: { type: 'component', name: 'RoadIcon', directions: ['north', 'south', 'east', 'west'] },
-    ROAD: { type: 'icon', name: 'road' },
-    POTHOLE: { type: 'component', name: 'BrightnessOutlinedIcon' },
+    ROAD: { type: 'symbol-outline', name: 'road' },
+    POTHOLE: { type: 'component', name: 'RadioButtonUnchecked' },
     // CAR: { type: 'component', name: 'DirectionsCarIcon', directions: ['north', 'south', 'east', 'west'] },
     // BUS: { type: 'component', name: 'DirectionsBusIcon', directions: ['north', 'south', 'east', 'west'] },
     // BUILDING: { type: 'component', name: 'BusinessIcon' },
@@ -20,15 +26,32 @@ export type MatrixResponse = {
     message: string;
 };
 
+export type MatrixIconsResponse = {
+    matrix: IconKey[][];
+    status: string;
+    message: string;
+};
+
 export type MatrixRequest = {
     matrix?: number[][];
     startPoint?: [number, number];
     endPoint?: [number, number];
 };
-export interface GridProps extends Partial<MatrixRequest> {
+
+export type MatrixObstacle = {
+    iconKey: IconKey;
+    points: [number, number][];
+    // direction?: string;
+    // lane?: 'fast' | 'slow';
+};
+
+export type MatrixIconsRequest = {
     rows?: number;
     columns?: number;
-    obstacles?: { iconKey: IconKey; points: [number, number][] }[];
+    obstacles?: MatrixObstacle[];
+}
+
+export interface GridProps extends Partial<MatrixRequest>, Partial<MatrixIconsRequest> {
     // obstacles?: { iconKey: IconKey; points: [number, number][]; direction?: string; lane?: 'fast' | 'slow' }[];
     // lanes?: {
     //     fast: { startRow: number; endRow: number };
@@ -37,7 +60,7 @@ export interface GridProps extends Partial<MatrixRequest> {
 }
 
 /**
- * Ensure that grid props has defined rows, columns, and matrix. obstacles, startPoint and endPoint are left as is.
+ * Ensure that grid props has defined rows, columns, obstacles, and matrix. startPoint and endPoint are left as is.
  * 0 = Open cell (Walkable), 1 = Closed cell (Obstacle), 2+ = Path cell from start to finish (in server/grid)
  */
 export const InitGridProps = (props: GridProps) => {
@@ -56,6 +79,7 @@ export const InitGridProps = (props: GridProps) => {
         return props;
     }
     props.obstacles?.flatMap(obstacle => obstacle.points).forEach(([y, x]) => {
+        // For pathfinding lib to register point as obstacle. It considers everything else not 1's as walkable. 2+ for path is my own idea, not from author of pathfinding.
         if (matrix[x]) {
             matrix[x][y] = 1; 
         }
@@ -64,7 +88,7 @@ export const InitGridProps = (props: GridProps) => {
         rows,
         columns,
         matrix,
-        obstacles: props.obstacles,
+        obstacles: props.obstacles || [],
         startPoint: props.startPoint,
         endPoint: props.endPoint
     } as GridProps;

@@ -1,6 +1,6 @@
 import express from 'express';
 import PF from 'pathfinding';
-import { MatrixResponse, MatrixRequest } from '../shared/types/grid';
+import { MatrixResponse, MatrixRequest, MatrixIconsResponse, MatrixIconsRequest, IconKey } from '../shared/types/grid';
 
 // interface LaneAStarRequest extends MatrixRequest {
 //     vehicleType?: 'car' | 'bus';
@@ -54,7 +54,7 @@ function AStar(router: express.Router) {
             const grid = new PF.Grid(matrix);
             const finder = new PF.AStarFinder();
             const path = finder.findPath(...startPoint, ...endPoint, grid) as [number, number][];
-            
+
             // if (path.length === 0) {
             //     res.status(400).json({
             //         status: 'error',
@@ -74,7 +74,7 @@ function AStar(router: express.Router) {
                 matrix: matrix,
                 status: 'success',
                 // message: `Calculated A* path for ${vehicleType || 'default'} vehicle`,
-                message: `Calculated A* path`,
+                message: 'Calculated A* path',
             });
         } catch (error) {
             console.error("Failed to calculate A*:", error);
@@ -86,4 +86,28 @@ function AStar(router: express.Router) {
     });
 }
 
-export { AStar };
+function MatrixIcons(router: express.Router) {
+    router.post<
+        Record<string, never>, // No URL parameters
+        MatrixIconsResponse | { status: string; message: string }, // Response type
+        Required<MatrixIconsRequest> // Request type
+    >
+    ('/api/grid/icons', async (req, res): Promise<void> => {
+        const { rows, columns, obstacles } = req.body;
+        const matrixIcons: IconKey[][] = Array.from({ length: rows }, () => Array(columns).fill('ROAD'));
+        obstacles.forEach(obstacle => {
+            obstacle.points.forEach(([y, x]) => {
+                if (matrixIcons[x]) {
+                    matrixIcons[x][y] = obstacle.iconKey;
+                }
+            });
+        });
+        res.json({
+            matrix: matrixIcons,
+            status: 'success',
+            message: 'Successfully setup matrix icons',
+        });
+    });
+}
+
+export { AStar, MatrixIcons };
