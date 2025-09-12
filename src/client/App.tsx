@@ -27,6 +27,8 @@ export const App = () => {
     updateProgress,
     getLevelStats,
     isLevelUnlocked,
+  selectedPack,
+  setSelectedPack,
   } = useLevelManager();
 
   const [showLevelSelector, setShowLevelSelector] = useState(true);
@@ -124,6 +126,9 @@ export const App = () => {
           levelStats={levelStats}
           totalStars={totalStars}
           isLevelUnlocked={isLevelUnlocked}
+          // keep the UI on the last selected pack if available
+          selectedPack={selectedPack}
+          setSelectedPack={setSelectedPack}
         />
       </Box>
     );
@@ -170,32 +175,23 @@ export const App = () => {
                   potholesFilled: gameProgress.potholesFilled + 1,
                   score: gameProgress.score + 50 
                 })}
-                onUseMove={() => updateProgress({ 
-                  movesUsed: gameProgress.movesUsed + 1 
-                })}
+                onUseMove={() => {
+                  // treat as hint: decrement movesLeft if limited and increment movesUsed
+                  const movesLeft = gameProgress.movesLeft ?? null;
+                  if (movesLeft === null) {
+                    updateProgress({ movesUsed: gameProgress.movesUsed + 1 });
+                  } else if (movesLeft > 0) {
+                    updateProgress({ movesUsed: gameProgress.movesUsed + 1, movesLeft: movesLeft - 1 });
+                  }
+                }}
                 onComplete={handleMockComplete}
                 onFail={handleMockFail}
+                disableTransport={currentLevel ? gameProgress.peopleTransported >= currentLevel.objectives.peopleToTransport : false}
+                disablePothole={currentLevel ? (currentLevel.objectives.potholesToFill ? gameProgress.potholesFilled >= currentLevel.objectives.potholesToFill : false) : false}
               />
             </Box>
 
-            {/* Game State Display */}
-            <Card sx={{ mt: 4, maxWidth: 600, margin: '0 auto' }}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Current Game State
-                </Typography>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                  <Typography>State: {gameProgress.gameState}</Typography>
-                  <Typography>Score: {gameProgress.score}</Typography>
-                  <Typography>People Transported: {gameProgress.peopleTransported} / {currentLevel.objectives.peopleToTransport}</Typography>
-                  <Typography>Potholes Filled: {gameProgress.potholesFilled} / {currentLevel.objectives.potholesToFill || 0}</Typography>
-                  <Typography>Moves Used: {gameProgress.movesUsed}</Typography>
-                  {gameProgress.timeRemaining !== undefined && (
-                    <Typography>Time Remaining: {gameProgress.timeRemaining}s</Typography>
-                  )}
-                </Box>
-              </CardContent>
-            </Card>
+            {/* Removed redundant Current Game State card - GameHUD displays this info */}
           </Container>
         </Box>
 

@@ -8,6 +8,7 @@ interface LevelManagerState {
   levelStats: Map<string, LevelStats>;
   totalStars: number;
   unlockedPacks: string[];
+  selectedPack?: string;
 }
 
 const STORAGE_KEY = 'flowtris-level-stats';
@@ -20,9 +21,10 @@ export const useLevelManager = () => {
     levelStats: new Map(),
     totalStars: 0,
     unlockedPacks: ['tutorial'], // Tutorial pack always unlocked
+  selectedPack: 'tutorial',
   });
 
-  const gameTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const gameTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Load saved data on mount
   useEffect(() => {
@@ -31,9 +33,9 @@ export const useLevelManager = () => {
     
     if (savedStats) {
       try {
-        const statsArray = JSON.parse(savedStats);
-        const statsMap = new Map(statsArray);
-        setState(prev => ({ ...prev, levelStats: statsMap }));
+        const statsArray = JSON.parse(savedStats) as [string, LevelStats][];
+        const statsMap = new Map<string, LevelStats>(statsArray);
+        setState(prev => ({ ...prev, levelStats: statsMap } as LevelManagerState));
       } catch (error) {
         console.error('Failed to load level stats:', error);
       }
@@ -74,23 +76,29 @@ export const useLevelManager = () => {
       gameTimerRef.current = null;
     }
 
-    const gameProgress: GameProgress = {
+    const baseProgress: Partial<GameProgress> = {
       currentLevel: levelId,
       score: 0,
-      timeRemaining: level.timeLimit || undefined,
       peopleTransported: 0,
       potholesFilled: 0,
       movesUsed: 0,
+      // initialize movesLeft from objectives.maxMoves (null = unlimited)
+      movesLeft: level.objectives?.maxMoves ?? null,
       starsEarned: 0,
       gameState: 'playing',
       startTime: Date.now(),
     };
 
+    const gameProgress: GameProgress = {
+      ...(baseProgress as GameProgress),
+      ...(level.timeLimit ? { timeRemaining: level.timeLimit } : {}),
+    } as GameProgress;
+
     setState(prev => ({
       ...prev,
       currentLevel: level,
       gameProgress,
-    }));
+    } as LevelManagerState));
 
     // Start timer if level has time limit
     if (level.timeLimit) {
@@ -283,16 +291,18 @@ export const useLevelManager = () => {
       const newTotalStars = Array.from(newLevelStats.values())
         .reduce((total, stats) => total + stats.starsEarned, 0);
 
-      // Save to localStorage
-      saveStats(newLevelStats);
-      saveTotalStars(newTotalStars);
+  // Save to localStorage
+  saveStats(newLevelStats);
+  saveTotalStars(newTotalStars);
 
-      return {
+      return ({
         ...prev,
         gameProgress: newGameProgress,
         levelStats: newLevelStats,
         totalStars: newTotalStars,
-      };
+        // persist last selected pack to keep user on same pack after completing
+        selectedPack: currentLevel ? (currentLevel.difficulty === 'easy' ? 'tutorial' : (currentLevel.difficulty === 'medium' ? 'city' : (currentLevel.difficulty === 'hard' ? 'expert' : 'endless'))) : prev.selectedPack,
+      } as LevelManagerState);
     });
   }, [saveStats, saveTotalStars]);
 
@@ -356,7 +366,9 @@ export const useLevelManager = () => {
       ...prev,
       currentLevel: null,
       gameProgress: null,
-    }));
+      // keep selectedPack as-is so UI can return to same pack
+      selectedPack: prev.selectedPack,
+    } as LevelManagerState));
   }, []);
 
   // Update game progress
@@ -402,12 +414,17 @@ export const useLevelManager = () => {
     };
   }, []);
 
+  const setSelectedPack = useCallback((packId: string) => {
+    setState(prev => ({ ...prev, selectedPack: packId } as LevelManagerState));
+  }, []);
+
   return {
     // State
     currentLevel: state.currentLevel,
     gameProgress: state.gameProgress,
     totalStars: state.totalStars,
     levelStats: state.levelStats,
+  selectedPack: state.selectedPack,
     
     // Actions
     startLevel,
@@ -417,6 +434,7 @@ export const useLevelManager = () => {
     failLevel,
     returnToMenu,
     updateProgress,
+  setSelectedPack,
     
     // Getters
     getLevelStats,
