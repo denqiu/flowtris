@@ -1,10 +1,12 @@
+import { navigateTo } from '@devvit/web/client';
+import { useCounter } from './hooks/useCounter';
 import React, { useState, useEffect } from 'react';
 import { Box, Container, Typography, Button, Card, CardContent } from '@mui/material';
 import { PlayArrow, Star, Construction, People } from '@mui/icons-material';
 import { useLevelManager } from './hooks/useLevelManager';
 import LevelSelector from './components/LevelSelector';
 import GameHUD from './components/GameHUD';
-import CityGrid from './components/CityGrid';
+import CityGrid, { TestCityGrid } from './components/CityGrid';
 import LevelCompleteDialog from './components/LevelCompleteDialog';
 import { DemoControls } from './components/DemoControls';
 import { GameState } from './shared/types/level';
@@ -130,10 +132,8 @@ export const App = () => {
 
             {/* Game Grid */}
             <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
-              <CityGrid
-                rows={currentLevel.gridSize.rows}
-                columns={currentLevel.gridSize.columns}
-              />
+              <CityGrid {...currentLevel.gridProps} />
+              {/* <TestCityGrid /> */}
             </Box>
 
             {/* Demo Controls */}
