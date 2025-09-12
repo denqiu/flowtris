@@ -8,3 +8,6 @@ yarn-error.log*
 .DS_Store
 webroot
 dist
+
+# Local copy of devvit.json to share same app for multiple accounts because apparently devvit is currently setup for one account per app.
+devvit.local.json

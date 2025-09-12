@@ -4,6 +4,19 @@
 - [PRD (Project Requirements Document)](PRD.md)
 - Tasks: See [Issues](https://github.com/denqiu/flowtris/issues)
 
+# FAQ
+
+- How to Share App for Multiple Developers:
+    1. Create a copy of `devvit.json`, i.e., `devvit.local.json`.
+    1. Modify `name` field, i.e., `<your-app-name>-<developer-initials>`. I just made it up. App name can be whatever you want but I find this is simple to work with.
+    1. Add `devvit.local.json` to `.gitignore`.
+    1. Inside `package.json`, add 2 commands, `dev:localdevvit` and `local`.
+        - `dev:localdevvit`: `devvit playtest --config=devvit.local.json`
+        - `local`: Copy `dev` and replace `npm run dev:devvit` with `npm run dev:localdevvit`.
+    1. Go to https://developers.reddit.com/new to create app with modified name.
+    1. If successful, you will see several commands. We do not need to run `npm create devvit@latest <token>`. Ignore it.
+    1. Instead, run `npm run local` to successfully launch UI.
+
 # References
 
 - [React.FC](https://dev.to/elhamnajeebullah/react-typescript-what-is-reactfc-and-why-should-i-use-it-4029)
