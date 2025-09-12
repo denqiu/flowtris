@@ -6,7 +6,7 @@
 
 # FAQ
 
-- How to Share App for Multiple Developers:
+- How to Setup App for Multiple Developers:
     1. Create a copy of `devvit.json`, i.e., `devvit.local.json`.
     1. Modify `name` field, i.e., `<your-app-name>-<developer-initials>`. I just made it up. App name can be whatever you want but I find this is simple to work with.
     1. Add `devvit.local.json` to `.gitignore`.
