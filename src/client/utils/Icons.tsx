@@ -2,11 +2,6 @@ import React from 'react';
 import { IconKey, ICONS } from '../../shared/types/grid';
 import * as MuiIcons from '@mui/icons-material';
 
-type renderIconProps = {
-    iconKey?: IconKey;
-    rotationDegree?: number;
-};
-
 /**
  * If icon is a component, use material-icons as a map. If symbol, link stylesheet in index.html is required before adding span element.
  */
