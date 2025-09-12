@@ -36,6 +36,8 @@ export interface GameProgress {
   peopleTransported: number;
   potholesFilled: number;
   movesUsed: number;
+  // Remaining moves/hints (null/undefined = unlimited)
+  movesLeft?: number | null;
   starsEarned: number;
   gameState: GameState;
   startTime: number;

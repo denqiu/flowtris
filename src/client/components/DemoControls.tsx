@@ -8,6 +8,8 @@ interface DemoControlsProps {
   onUseMove: () => void;
   onComplete: () => void;
   onFail: () => void;
+  disableTransport?: boolean;
+  disablePothole?: boolean;
 }
 
 export const DemoControls: React.FC<DemoControlsProps> = ({
@@ -16,6 +18,8 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
   onUseMove,
   onComplete,
   onFail,
+  disableTransport = false,
+  disablePothole = false,
 }) => {
   return (
     <Paper 
@@ -40,7 +44,8 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
           startIcon={<People />}
           onClick={onTransportPerson}
           size="small"
-          color="success"
+          sx={{ backgroundColor: 'var(--color-transport)', color: '#fff' }}
+          disabled={disableTransport}
         >
           Transport Person
         </Button>
@@ -50,7 +55,8 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
           startIcon={<Construction />}
           onClick={onFillPothole}
           size="small"
-          color="warning"
+          sx={{ backgroundColor: 'var(--color-pothole)', color: '#fff' }}
+          disabled={disablePothole}
         >
           Fill Pothole
         </Button>
@@ -60,9 +66,9 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
           startIcon={<Directions />}
           onClick={onUseMove}
           size="small"
-          color="info"
+          sx={{ backgroundColor: 'var(--color-hint)', color: '#fff' }}
         >
-          Use Move
+          Hint
         </Button>
       </Box>
       
