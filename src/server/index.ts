@@ -2,6 +2,7 @@ import express from 'express';
 import { InitResponse, IncrementResponse, DecrementResponse } from '../shared/types/api';
 import { redis, reddit, createServer, context, getServerPort } from '@devvit/web/server';
 import { createPost } from './core/post';
+import * as Grid from './grid';
 
 const app = express();
 
@@ -13,6 +14,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.text());
 
 const router = express.Router();
+
+Grid.MatrixPaths_A(router);
+Grid.MatrixPaths_B(router);
+Grid.MatrixIcons(router);
 
 router.get<{ postId: string }, InitResponse | { status: string; message: string }>(
   '/api/init',

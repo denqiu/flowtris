@@ -21,6 +21,7 @@ import {
   Score,
 } from '@mui/icons-material';
 import { GameProgress, GameState } from '../../shared/types/level';
+import { renderIcon } from '../utils/Icons';
 
 interface GameHUDProps {
   gameProgress: GameProgress;
@@ -144,7 +145,7 @@ const GameHUD: React.FC<GameHUDProps> = ({
           <Box sx={{ flex: 1 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <Construction fontSize="small" />
+                {renderIcon('POTHOLE')}
                 <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
                   Potholes Filled
                 </Typography>

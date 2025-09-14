@@ -143,7 +143,7 @@ export const useLevelManager = () => {
       clearInterval(gameTimerRef.current);
       gameTimerRef.current = null;
     }
-
+    
     setState(prev => {
       if (!prev.gameProgress || prev.gameProgress.gameState !== 'playing') {
         return prev;

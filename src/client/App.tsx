@@ -1,12 +1,15 @@
+import { navigateTo } from '@devvit/web/client';
+import { useCounter } from './hooks/useCounter';
 import React, { useState, useEffect } from 'react';
 import { Box, Container, Typography, Button, Card, CardContent } from '@mui/material';
 import { PlayArrow, Star, Construction, People } from '@mui/icons-material';
 import { useLevelManager } from './hooks/useLevelManager';
 import LevelSelector from './components/LevelSelector';
 import GameHUD from './components/GameHUD';
-import CityGrid from './components/CityGrid';
+import { CityGrid_A, CityGrid_B, TestCityGrid } from './components/CityGrid';
 import LevelCompleteDialog from './components/LevelCompleteDialog';
 import { DemoControls } from './components/DemoControls';
+import FeatureDemo from './components/FeatureDemo';
 import { GameState } from './shared/types/level';
 
 export const App = () => {
@@ -30,6 +33,7 @@ export const App = () => {
 
   const [showLevelSelector, setShowLevelSelector] = useState(true);
   const [showCompletionDialog, setShowCompletionDialog] = useState(false);
+  const [showFeatureDemo, setShowFeatureDemo] = useState(false);
 
   // Show completion dialog when level is completed or failed
   useEffect(() => {
@@ -87,10 +91,36 @@ export const App = () => {
     failLevel();
   };
 
+  // Show feature demo
+  if (showFeatureDemo) {
+    return (
+      <Box sx={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
+        <FeatureDemo />
+        <Box sx={{ position: 'fixed', top: 16, left: 16 }}>
+          <Button 
+            variant="contained" 
+            onClick={() => setShowFeatureDemo(false)}
+          >
+            Back to Game
+          </Button>
+        </Box>
+      </Box>
+    );
+  }
+
   // Show level selector
   if (showLevelSelector) {
     return (
       <Box sx={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
+        <Box sx={{ position: 'fixed', top: 16, right: 16, zIndex: 1000 }}>
+          <Button 
+            variant="outlined" 
+            onClick={() => setShowFeatureDemo(true)}
+            sx={{ mr: 1 }}
+          >
+            View Feature Demo
+          </Button>
+        </Box>
         <LevelSelector
           onLevelSelect={handleLevelSelect}
           levelStats={levelStats}
@@ -106,6 +136,7 @@ export const App = () => {
 
   // Show game interface
   if (currentLevel && gameProgress) {
+    currentLevel.gridProps.gameState = gameProgress.gameState;
   return (
       <Box sx={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
         <GameHUD
@@ -130,10 +161,8 @@ export const App = () => {
 
             {/* Game Grid */}
             <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
-              <CityGrid
-                rows={currentLevel.gridSize.rows}
-                columns={currentLevel.gridSize.columns}
-              />
+              <CityGrid_B {...currentLevel.gridProps} />
+              {/* <TestCityGrid /> */}
             </Box>
 
             {/* Demo Controls */}
