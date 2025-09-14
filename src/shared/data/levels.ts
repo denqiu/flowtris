@@ -25,7 +25,8 @@ export const LEVELS: LevelConfig[] = [
     },
     objectives: {
       peopleToTransport: 3,
-      potholesToFill: 0,
+      potholesToFill: null,
+      maxMoves: null
     },
     potholePattern: 'none',
     potholeCount: 0,
@@ -41,6 +42,7 @@ export const LEVELS: LevelConfig[] = [
     objectives: {
       peopleToTransport: 2,
       potholesToFill: 1,
+      maxMoves: null
     },
     potholePattern: 'fixed',
     potholeCount: 1,
@@ -58,6 +60,7 @@ export const LEVELS: LevelConfig[] = [
     objectives: {
       peopleToTransport: 4,
       potholesToFill: 1,
+      maxMoves: null
     },
     potholePattern: 'random',
     potholeCount: 2,
@@ -165,6 +168,8 @@ export const LEVELS: LevelConfig[] = [
     gridProps: { rows: 8, columns: 10 },
     objectives: {
       peopleToTransport: 999, // High number for endless
+      potholesToFill: null,
+      maxMoves: null
     },
     potholePattern: 'random',
     potholeCount: 5,
@@ -174,7 +179,7 @@ export const LEVELS: LevelConfig[] = [
 ];
 
 for (const level of LEVELS) {
-  level.gridProps = InitGridProps(level.gridProps);
+  level.gridProps = InitGridProps(level.id, level.objectives.potholesToFill || 0, level.gridProps);
 }
 
 // Level packs for progression

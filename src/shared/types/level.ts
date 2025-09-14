@@ -16,8 +16,8 @@ export interface LevelConfig {
   gridProps: GridProps;
   objectives: {
     peopleToTransport: number;
-    potholesToFill?: number;
-    maxMoves?: number;
+    potholesToFill: number | null;
+    maxMoves: number | null;
   };
   potholePattern: 'random' | 'fixed' | 'none';
   potholeCount: number;

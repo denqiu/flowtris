@@ -2,9 +2,8 @@ import { useState, useCallback } from 'react';
 import { IconKey, MatrixIconsRequest, MatrixIconsResponse } from '../../../shared/types/grid';
 import { SharedGridState } from '../../../shared/state/grid';
 
-export const useMatrixIcons = ({ setError }: SharedGridState) => {
-    const [matrixIcons, setMatrixIcons] = useState<IconKey[][]>([]);
-
+const useMatrixIcons = ({ setError }: SharedGridState) => {
+    const [matrixIcons, setMatrixIcons] = useState<IconKey[][] | null>(null);
     const fetchMatrixIcons = useCallback(
         async (request: MatrixIconsRequest) => {
             try {
@@ -25,3 +24,5 @@ export const useMatrixIcons = ({ setError }: SharedGridState) => {
 
     return { matrixIcons, fetchMatrixIcons } as const;
 };
+
+export default useMatrixIcons;

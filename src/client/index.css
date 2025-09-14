@@ -5,3 +5,13 @@
 	--color-pothole: #ef6c00; /* orange */
 	--color-hint: #1e88e5; /* blue */
 }
+
+.spinner {
+	font-size: 48px;
+	animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+	from { transform: rotate(0deg); }
+	to   { transform: rotate(360deg); }
+}

@@ -41,7 +41,9 @@ const LevelSelector: React.FC<LevelSelectorProps> = ({
   onLevelSelect,
   levelStats,
   totalStars,
+  selectedPack,
   isLevelUnlocked,
+  setSelectedPack,
 }) => {
   const [internalSelectedPack, setInternalSelectedPack] = useState<string>(selectedPack || 'tutorial');
   const [selectedLevel, setSelectedLevel] = useState<LevelConfig | null>(null);

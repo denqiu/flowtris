@@ -1,47 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { useAStar } from "../hooks/grid/useAStar";
-import { GridProps, MatrixRequest, ICONS, IconKey, MatrixIconsRequest } from "../../shared/types/grid";
-import * as MuiIcons from '@mui/icons-material';
+import React, { useEffect, useState, useMemo } from "react";
+import { GridProps, MatrixRequest, MatrixIconsRequest } from "../../shared/types/grid";
 import { Box, Paper } from "@mui/material";
-import { useMatrixIcons } from "../hooks/grid/useMatrixIcon";
-
-/**
- * Render icon component based on icon configuration
- */
-// const renderIcon = (iconKey: IconKey, direction?: string) => {
-//     const icon = ICONS[iconKey];
-//     if (icon.type === 'component') {
-//         const IconComponent = (MuiIcons as any)[icon.name];
-//         if (IconComponent) {
-//             const rotation = direction ? getRotationForDirection(direction) : 0;
-//             return <IconComponent sx={{ transform: `rotate(${rotation}deg)` }} />;
-//         }
-//     }
-//     return icon.name || iconKey;
-// };
-
-/**
- * If icon is a component, use material-icons as a map. If symbol, link stylesheet in index.html is required before adding span element.
- */
-const renderIcon = (iconKey?: IconKey, rotationDegree?: number) => {
-    if (!iconKey) {
-        return null;
-    }
-    rotationDegree = rotationDegree || 0;
-    const icon = ICONS[iconKey];
-    if (icon.type === 'component') {
-        const MuiComponent = (MuiIcons as Record<string, React.ElementType>)[icon.name];
-        if (MuiComponent) {
-            return <MuiComponent sx={{ transform: `rotate(${rotationDegree}deg)` }} />;
-        }
-    } else if (icon.type === 'symbol-outline') {
-        return <span 
-            class="material-symbols-outlined"
-            style={{ transform: `rotate(${rotationDegree}deg)` }}
-        >{icon.name}</span>;
-    }
-    return iconKey;
-}
+import { renderIcon } from "../utils/Icons";
+import Spinner from "./Spinner";
+import useMatrixPaths from "../hooks/grid/useMatrixPaths";
+import useMatrixIcons from "../hooks/grid/useMatrixIcons";
 
 /**
  * Get rotation angle for direction
@@ -62,19 +25,56 @@ const getRotationForDirection = (direction: string): number => {
  */
 // const CityGrid: React.FC<GridProps> = ({ rows, columns, matrix, obstacles, startPoint, endPoint, lanes }) => {
 const CityGrid: React.FC<GridProps> = ({ 
-    rows, columns, matrix, obstacles, // Required
-    startPoint, endPoint // Optional
+    rows, columns, matrix, obstacles, paths // Required
 }) => {
     const [error, setError] = useState<string | null>(null);
-    const { updateMatrix, fetchAStar } = useAStar({ setError });
+    const { updateMatrix, fetchMatrixPaths } = useMatrixPaths({ setError });
     const { matrixIcons, fetchMatrixIcons } = useMatrixIcons({ setError });
     useEffect(() => {
-        void fetchAStar({matrix, startPoint, endPoint} as MatrixRequest);
+        void fetchMatrixPaths({matrix, paths} as MatrixRequest);
         void fetchMatrixIcons({ rows, columns, obstacles } as MatrixIconsRequest);
-    }, [fetchAStar, matrix, startPoint, endPoint, fetchMatrixIcons, rows, columns, obstacles]);
-    if (!updateMatrix) {
-        return <div>Invalid arguments</div>;
-    }
+    }, [fetchMatrixPaths, matrix, paths, fetchMatrixIcons, rows, columns, obstacles]);
+
+    const getCells: React.ReactNode[] | null = useMemo(() => {
+        if (!updateMatrix || !matrixIcons) {
+            return null;
+        }
+        const cells: React.ReactNode[] = [];
+        updateMatrix.forEach((row, rowIndex) => {
+            row.forEach((cellValue, columnIndex) => {
+                // const isInFastLane = lanes?.fast && rowIndex >= lanes.fast.startRow && rowIndex <= lanes.fast.endRow;
+                // const isInSlowLane = lanes?.slow && rowIndex >= lanes.slow.startRow && rowIndex <= lanes.slow.endRow;
+                
+                // Determine cell background color based on lane
+                // let backgroundColor = '#f5f5f5'; // Default
+                // if (isInFastLane) backgroundColor = '#e3f2fd'; // Light blue for fast lane
+                // if (isInSlowLane) backgroundColor = '#f3e5f5'; // Light purple for slow lane
+
+                cells.push(
+                    <Box key={`${rowIndex}-${columnIndex}`}> 
+                        <Paper 
+                            elevation={1} 
+                            style={{ 
+                                aspectRatio: '1 / 1', 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center',
+                                // backgroundColor: backgroundColor,
+                                // border: cellValue >= 2 ? '2px solid #4caf50' : '1px solid #ddd' // Green border for path
+                            }}
+                        >
+                            {/* {iconData ? renderIcon(iconData.iconKey, iconData.direction) : 
+                            cellValue >= 2 ? '🚗' : cellValue === 1 ? '🚧' : ''} */}
+
+                            {renderIcon(matrixIcons[rowIndex]?.[columnIndex])}
+                        </Paper>
+                    </Box>
+                );
+            });
+        });   
+        return cells;
+    }, [updateMatrix, matrixIcons]);
+
     // Create matrix for icons with proper coordinate mapping
     // const matrixIcons: (object | null)[][] = Array.from({ length: rows }, () => Array(columns).fill(null));
     // obstacles?.forEach(obstacle => {
@@ -88,39 +88,13 @@ const CityGrid: React.FC<GridProps> = ({
     //         }
     //     });
     // });
-    const cells = [] as React.ReactNode[];
-    updateMatrix.forEach((row, rowIndex) => {
-        row.forEach((cellValue, columnIndex) => {
-            // const isInFastLane = lanes?.fast && rowIndex >= lanes.fast.startRow && rowIndex <= lanes.fast.endRow;
-            // const isInSlowLane = lanes?.slow && rowIndex >= lanes.slow.startRow && rowIndex <= lanes.slow.endRow;
-            
-            // Determine cell background color based on lane
-            // let backgroundColor = '#f5f5f5'; // Default
-            // if (isInFastLane) backgroundColor = '#e3f2fd'; // Light blue for fast lane
-            // if (isInSlowLane) backgroundColor = '#f3e5f5'; // Light purple for slow lane
-
-            cells.push(
-                <Box key={`${rowIndex}-${columnIndex}`}> 
-                    <Paper 
-                        elevation={1} 
-                        style={{ 
-                            aspectRatio: '1 / 1', 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            justifyContent: 'center',
-                            // backgroundColor: backgroundColor,
-                            // border: cellValue >= 2 ? '2px solid #4caf50' : '1px solid #ddd' // Green border for path
-                        }}
-                    >
-                        {/* {iconData ? renderIcon(iconData.iconKey, iconData.direction) : 
-                         cellValue >= 2 ? '🚗' : cellValue === 1 ? '🚧' : ''} */}
-
-                         {renderIcon(matrixIcons?.[rowIndex]?.[columnIndex]) || cellValue}
-                    </Paper>
-                </Box>
-            );
-        });
-    });   
+    
+    if (!updateMatrix) {
+        return <div>Invalid arguments</div>;
+    }
+    if (!matrixIcons) {
+        return <Spinner />;
+    }
     return (
         <div>
             {error && <p>{error}</p>}
@@ -131,10 +105,9 @@ const CityGrid: React.FC<GridProps> = ({
                 maxWidth: '600px', // Set max width
                 margin: '0 auto'   // Center the grid
             }}>
-                {cells}
+                {getCells}
             </Box>
         </div>
-        
     );
 };
 

@@ -15,7 +15,7 @@ app.use(express.text());
 
 const router = express.Router();
 
-Grid.AStar(router);
+Grid.MatrixPaths(router);
 Grid.MatrixIcons(router);
 
 router.get<{ postId: string }, InitResponse | { status: string; message: string }>(
