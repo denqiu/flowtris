@@ -39,8 +39,8 @@ const renderIcon = (iconKey?: IconKey, direction: IconDirection = 'down') => {
         }
     } else if (icon.type === 'symbol-outline') {
         const props = {
-            class: "material-symbols-outlined",
-            transform: transform
+            className: "material-symbols-outlined",
+            style: { transform: transform }
         };
         return <span {...props}>{iconName}</span>;
     } else if (icon.type === 'font-awesome') {

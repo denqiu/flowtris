@@ -196,7 +196,8 @@ const GameHUD: React.FC<GameHUDProps> = ({
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               {/* Moves Left (Hints) */}
               <Typography variant="body2" color="text.secondary">
-                Moves left: {gameProgress.movesLeft === null || gameProgress.movesLeft === undefined ? '∞' : gameProgress.movesLeft}
+                Moves left: {gameProgress.movesLeft === null || gameProgress.movesLeft === undefined ? 
+                  <span style={{ fontSize: '1.5em' }}>∞</span> : gameProgress.movesLeft}
               </Typography>
             </Box>
 

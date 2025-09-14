@@ -7,7 +7,7 @@ const Spinner: React.FC = () => {
     return (
         <div>
             <p>Loading...Please wait a moment!</p>
-            <span class="material-symbols-outlined spinner">progress_activity</span>
+            <span className="material-symbols-outlined spinner">progress_activity</span>
         </div>
     );
 };

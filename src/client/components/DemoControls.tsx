@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Button, Typography, Paper } from '@mui/material';
-import { People, Construction, Directions } from '@mui/icons-material';
+import { People, RadioButtonUnchecked, Directions } from '@mui/icons-material';
 import { renderIcon } from '../utils/Icons';
 
 interface DemoControlsProps {
@@ -70,7 +70,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
         
         <Button
           variant="contained"
-          startIcon={<Construction />}
+          startIcon={<RadioButtonUnchecked />}
           onClick={onFillPothole}
           size="small"
           sx={{ backgroundColor: 'var(--color-pothole)', color: '#fff' }}

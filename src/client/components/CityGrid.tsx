@@ -75,7 +75,7 @@ const CityGrid_A: React.FC<GridProps_A> = ({
             <Box sx={{ 
                 display: 'grid', 
                 gridTemplateColumns: `repeat(${columns}, 1fr)`, 
-                gap: 1,
+                gap: 0, // Set spacing to 0 as requested
                 maxWidth: '600px', // Set max width
                 margin: '0 auto'   // Center the grid
             }}>
@@ -148,7 +148,7 @@ const CityGrid_B: React.FC<GridProps_B> = ({
             <Box sx={{ 
                 display: 'grid', 
                 gridTemplateColumns: `repeat(${columns}, 1fr)`, 
-                gap: 1,
+                gap: 0, // Set spacing to 0 as requested
                 maxWidth: '600px', // Set max width
                 margin: '0 auto'   // Center the grid
             }}>

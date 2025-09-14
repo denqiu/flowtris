@@ -1,16 +1,15 @@
-import { navigateTo } from '@devvit/web/client';
-import { useCounter } from './hooks/useCounter';
-import React, { useState, useEffect } from 'react';
-import { Box, Container, Typography, Button, Card, CardContent } from '@mui/material';
-import { PlayArrow, Star, Construction, People } from '@mui/icons-material';
+
+import { useState, useEffect } from 'react';
+import { Box, Container, Typography, Button } from '@mui/material';
+
 import { useLevelManager } from './hooks/useLevelManager';
 import LevelSelector from './components/LevelSelector';
 import GameHUD from './components/GameHUD';
-import { CityGrid_A, CityGrid_B, TestCityGrid } from './components/CityGrid';
+import { CityGrid_B } from './components/CityGrid';
 import LevelCompleteDialog from './components/LevelCompleteDialog';
 import { DemoControls } from './components/DemoControls';
 import FeatureDemo from './components/FeatureDemo';
-import { GameState } from './shared/types/level';
+
 
 export const App = () => {
   const {
