@@ -136,6 +136,7 @@ export const App = () => {
 
   // Show game interface
   if (currentLevel && gameProgress) {
+    currentLevel.gridProps.gameState = gameProgress.gameState;
   return (
       <Box sx={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
         <GameHUD

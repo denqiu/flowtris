@@ -1,3 +1,14 @@
+import { GameState } from "./level";
+
+export type IconDirection = 'up' | 'down' | 'left' | 'right';
+
+export type IconType = {
+    type: 'component' | 'symbol-outline' | 'font-awesome';
+    rotate: 'degree' | 'image' | null;
+    name: string | undefined;
+    directions: Record<IconDirection, number | { name: string; flip: boolean | null }> | null
+};
+
 /**
  * symbol type refers to <span> element symbol and component type refers to component from mui/icons-material.
  * 
@@ -8,17 +19,60 @@
  * References:
  * @link Symbols {https://fonts.google.com/icons}
  * @link Components {https://mui.com/material-ui/material-icons/}
+ * @link Font Awesome {https://fontawesome.com/search?ic=free&o=r}
  */
 export const ICONS = {
-    // ROAD: { type: 'component', name: 'RoadIcon', directions: ['north', 'south', 'east', 'west'] },
-    ROAD: { type: 'symbol-outline', name: 'road' },
-    POTHOLE: { type: 'component', name: 'RadioButtonUnchecked' },
-    // CAR: { type: 'component', name: 'DirectionsCarIcon', directions: ['north', 'south', 'east', 'west'] },
+    ROAD: {
+        type: 'symbol-outline',
+        rotate: 'degree',
+        name: 'road',
+        directions: {
+            'up': 0,
+            'down': 0,
+            'left': 90,
+            'right': 90
+        }
+    },
+    POTHOLE: {
+        type: 'component',
+        rotate: null,
+        name: 'RadioButtonUnchecked',
+        directions: null
+    },
+    CAR: {
+        type: 'font-awesome',
+        rotate: 'image',
+        name: undefined,
+        directions: {
+            'up': {
+                name: 'car-rear',
+                flip: null
+            },
+            'down': {
+                name: 'car',
+                flip: null
+            },
+            'left': {
+                name: 'car-side',
+                flip: true
+            },
+            'right': {
+                name: 'car-side',
+                flip: false
+            }
+        },
+    },
     // BUS: { type: 'component', name: 'DirectionsBusIcon', directions: ['north', 'south', 'east', 'west'] },
     // BUILDING: { type: 'component', name: 'BusinessIcon' },
     // TREE: { type: 'component', name: 'ParkIcon' },
     // CITY: { type: 'component', name: 'LocationCityIcon' }
-};
+    HOME: {
+        type: 'component',
+        rotate: null,
+        name: 'Home',
+        directions: null
+    }
+} satisfies Record<string, IconType>;
 
 export type IconKey = keyof typeof ICONS;
 
@@ -52,7 +106,7 @@ export type MatrixResponse = {
 export type MatrixObstacle = {
     iconKey: IconKey;
     points: [number, number][];
-    direction: string | null;
+    direction: IconDirection | null;
 };
 
 export type MatrixIconsRequest = {
@@ -84,6 +138,7 @@ export interface GridProps_A extends Partial<MatrixRequest_A>, Partial<MatrixIco
 
 export interface GridProps_B extends Partial<MatrixRequest_B>, Partial<MatrixIconsRequest> {
     id?: string;
+    gameState?: GameState;
 }
 
 /**

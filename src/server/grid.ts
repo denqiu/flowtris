@@ -1,6 +1,6 @@
 import express from 'express';
 import PF from 'pathfinding';
-import { MatrixResponse, MatrixRequest_A, MatrixRequest_B, MatrixIconsResponse, MatrixIconsRequest, IconKey } from '../shared/types/grid';
+import { MatrixResponse, MatrixRequest_A, MatrixRequest_B, MatrixIconsResponse, MatrixIconsRequest, MatrixDirectionsRequest, MatrixDirectionsResponse IconKey } from '../shared/types/grid';
 
 /**
  * Note: Decision paralysis coming in. Rather than try to automate paths, try giving players more control over paths.
@@ -148,6 +148,9 @@ function MatrixPaths_B(router: express.Router) {
         Required<MatrixRequest_B> // Request type
     >
     ('/api/grid/paths/B', async (req, res): Promise<void> => {
+        // Use level id to retrieve matrix or if matrix doesn't exist continue to request body.
+        const { id } = req.params;
+
         const { matrix, startPoint, endPoint, potholeCount } = req.body;
         const grid = new PF.Grid(matrix);
         if ([startPoint, endPoint].every(([x, y]) => grid.isInside(x, y) && grid.isWalkableAt(x, y))) {
@@ -202,6 +205,8 @@ function MatrixIcons(router: express.Router) {
         Required<MatrixIconsRequest> // Request type
     >
     ('/api/grid/icons', async (req, res): Promise<void> => {
+        const { id } = req.params;
+        
         const { rows, columns, obstacles } = req.body;
         const matrixIcons: IconKey[][] = Array.from({ length: rows }, () => Array(columns).fill('ROAD'));
         obstacles.forEach(obstacle => {
@@ -221,9 +226,9 @@ function MatrixIcons(router: express.Router) {
 
 function MatrixDirections(router: express.Router) {
     router.post<
-        Record<string, never>, // No URL parameters
-        MatrixIconsResponse | { status: string; message: string }, // Response type
-        Required<MatrixIconsRequest> // Request type
+        { id: string }, // URL parameters
+        MatrixDirectionsResponse | { status: string; message: string }, // Response type
+        Required<MatrixDirectionsRequest> // Request type
     >
     ('/api/grid/directions', async (req, res): Promise<void> => {
 

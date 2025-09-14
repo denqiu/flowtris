@@ -33,7 +33,7 @@ const CityGrid_A: React.FC<GridProps_A> = ({
     const { matrixIcons, fetchMatrixIcons } = useMatrixIcons({ setError });
     useEffect(() => {
         void fetchMatrixPaths({matrix, paths} as MatrixRequest_A);
-        void fetchMatrixIcons({ rows, columns, obstacles } as MatrixIconsRequest);
+        void fetchMatrixIcons(null, { rows, columns, obstacles, } as MatrixIconsRequest);
     }, [fetchMatrixPaths, matrix, paths, fetchMatrixIcons, rows, columns, obstacles]);
 
     const getCells: React.ReactNode[] | null = useMemo(() => {
@@ -92,18 +92,22 @@ const CityGrid_A: React.FC<GridProps_A> = ({
  */
 const CityGrid_B: React.FC<GridProps_B> = ({ 
     rows, columns, matrix, obstacles, potholeCount, // Required
+    gameState, // Required
     startPoint, endPoint, isAutobahn // Optional
 }) => {
     const [error, setError] = useState<string | null>(null);
     const { updateMatrix, selectedPath, potholes, fetchMatrixPaths } = useMatrixPaths_B({ setError });
     const { matrixIcons, fetchMatrixIcons } = useMatrixIcons({ setError });
+
+    // fetch path animation here?
+
     useEffect(() => {
-        void fetchMatrixPaths({matrix, startPoint, endPoint} as MatrixRequest_B);
-        if (potholes && obstacles) {
-            obstacles.push({ iconKey: 'POTHOLE', points: potholes, direction: null });
+        void fetchMatrixPaths({matrix, potholeCount, startPoint, endPoint} as MatrixRequest_B);
+        if (selectedPath) {
+            // This means we can pass in potholes from the selected path.
+            void fetchMatrixIcons(potholes, { rows, columns, obstacles } as MatrixIconsRequest);
         }
-        void fetchMatrixIcons({ rows, columns, obstacles } as MatrixIconsRequest);
-    }, [fetchMatrixPaths, matrix, startPoint, endPoint, fetchMatrixIcons, rows, columns, obstacles, potholes]);
+    }, [fetchMatrixPaths, matrix, potholeCount, startPoint, endPoint, fetchMatrixIcons, rows, columns, obstacles, potholes, selectedPath]);
 
     const getCells: React.ReactNode[] | null = useMemo(() => {
         if (!updateMatrix || !matrixIcons) {
