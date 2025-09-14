@@ -1,6 +1,6 @@
 import express from 'express';
 import PF from 'pathfinding';
-import { MatrixResponse, MatrixRequest_A, MatrixRequest_B, MatrixIconsResponse, MatrixIconsRequest, MatrixDirectionsRequest, MatrixDirectionsResponse IconKey } from '../shared/types/grid';
+import { MatrixResponse, MatrixRequest_A, MatrixRequest_B, MatrixIconsResponse, MatrixIconsRequest, MatrixDirectionsRequest, MatrixDirectionsResponse, IconKey } from '../shared/types/grid';
 
 /**
  * Note: Decision paralysis coming in. Rather than try to automate paths, try giving players more control over paths.
