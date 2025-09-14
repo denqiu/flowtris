@@ -1,17 +1,9 @@
 import express from 'express';
 import PF from 'pathfinding';
-import { MatrixPath, MatrixResponse, MatrixRequest, MatrixIconsResponse, MatrixIconsRequest, IconKey } from '../shared/types/grid';
-
-// interface LaneAStarRequest extends MatrixRequest {
-//     vehicleType?: 'car' | 'bus';
-//     lanes?: {
-//         fast: { startRow: number; endRow: number };
-//         slow: { startRow: number; endRow: number };
-//     };
-// }
+import { MatrixResponse, MatrixRequest_A, MatrixRequest_B, MatrixIconsResponse, MatrixIconsRequest, IconKey } from '../shared/types/grid';
 
 /**
- * Note: Decision paralysis coming in.
+ * Note: Decision paralysis coming in. Rather than try to automate paths, try giving players more control over paths.
  * 
  * A* is used to calculate path from start to end points.
  * 
@@ -29,9 +21,11 @@ import { MatrixPath, MatrixResponse, MatrixRequest, MatrixIconsResponse, MatrixI
  * 6. Key selected path to value { matrix and potholes } and store to sqlite.
  * 7. Next time, if selected path exists, return already created matrix.
  * 8. Use level id to determine whether to retrieve or create matrices.
+ * 
+ * @deprecated
  */
-function MatrixPaths(router: express.Router) {
-    const handlePaths = async (id: string, {matrix, paths}: Required<MatrixRequest>) => {
+function MatrixPaths_A(router: express.Router) {
+    const handlePaths = async (id: string, {matrix, paths}: Required<MatrixRequest_A>) => {
         const grid = new PF.Grid(matrix);
 
         paths.points.map(({ startPoint, endPoint }) => {
@@ -103,9 +97,9 @@ function MatrixPaths(router: express.Router) {
     router.post<
         { id: string }, // URL parameters
         MatrixResponse | { status: string; }, // Response type
-        Required<MatrixRequest> // Request type
+        Required<MatrixRequest_A> // Request type
     >
-    ('/api/grid/paths', async (req, res): Promise<void> => {
+    ('/api/grid/paths/A', async (req, res): Promise<void> => {
         // 8. Use level id to retrieve matrix or if matrix doesn't exist continue to request body.
         const { id } = req.params;
 
@@ -138,6 +132,66 @@ function MatrixPaths(router: express.Router) {
                 });
             });
         });
+    });
+}
+
+/**
+ * Don't have clear vision of game. Starting small, testing that, then expand and experiment from there. So many possibilities and wanted to ensure code doesn't become too simple and inflexible for supporting multiple options/paths.
+ * 
+ * 1. Calculate A* for one path.
+ * 2. 
+ */
+function MatrixPaths_B(router: express.Router) {
+    router.post<
+        { id: string }, // URL parameters
+        MatrixResponse | { status: string; }, // Response type
+        Required<MatrixRequest_B> // Request type
+    >
+    ('/api/grid/paths/B', async (req, res): Promise<void> => {
+        const { matrix, startPoint, endPoint, potholeCount } = req.body;
+        const grid = new PF.Grid(matrix);
+        if ([startPoint, endPoint].every(([x, y]) => grid.isInside(x, y) && grid.isWalkableAt(x, y))) {
+            const finder = new PF.AStarFinder();
+            const path = finder.findPath(...startPoint, ...endPoint, grid) as [number, number][];
+            const potholes: [number, number][] = [];
+            const indices: number[] = [];
+            let randomIndex;
+            for (let i = 0; i < potholeCount; i++) {
+                randomIndex = Math.floor(Math.random() * path.length);
+                indices.push(randomIndex);
+                const pothole = path[randomIndex];
+                if (pothole) {
+                    potholes.push(pothole);
+                }
+            }
+            // Exclude pothole points on path. Set other points on path to 0 (open).
+            path.filter((_, index) => !indices.includes(index)).forEach(([y, x]) => {
+                if (matrix[x]) {
+                    matrix[x][y] = 0; 
+                }
+            });
+            potholes.forEach(([y, x]) => {
+                if (matrix[x]) {
+                    matrix[x][y] = 1;
+                }
+            });
+            // Store in sqlite.
+            const result = {
+                matrix: matrix,
+                selectedPath: path,
+                potholes: potholes
+            };
+            res.json({
+                ...result,
+                status: 'success',
+                message: 'Successfully loaded path',
+            });
+        } else {
+            console.error('Start point or end point is out of bounds.');
+            res.status(400).json({
+                status: 'error'
+            });
+        }
     });
 }
 
@@ -176,4 +230,4 @@ function MatrixDirections(router: express.Router) {
     });
 }
 
-export { MatrixPaths, MatrixIcons, MatrixDirections };
+export { MatrixPaths_A, MatrixPaths_B, MatrixIcons, MatrixDirections };

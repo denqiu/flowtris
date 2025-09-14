@@ -1,27 +1,27 @@
 import React, { useState } from 'react';
 import { Box, Button, Typography, Paper, Grid, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
-import CityGrid from './CityGrid';
-import { GridProps } from '../../shared/types/grid';
+import { CityGrid_A, CityGrid_B } from './CityGrid';
+import { GridProps_A, GridProps_B } from '../../shared/types/grid';
 
 const FeatureDemo: React.FC = () => {
     const [vehicleType, setVehicleType] = useState<'car' | 'bus'>('car');
     const [selectedDemo, setSelectedDemo] = useState<string>('basic');
 
-    const demos: Record<string, GridProps> = {
+    const demos: Record<string, GridProps_B> = {
         basic: {
             rows: 6,
             columns: 8,
             startPoint: [0, 0],
             endPoint: [5, 7],
             obstacles: [
-                { iconKey: 'POTHOLE', points: [[2, 3], [4, 3]] },
+                { iconKey: 'POTHOLE', points: [[2, 3], [4, 3]], direction: null },
                 { iconKey: 'ROAD', points: [[1, 1], [1, 2], [1, 3]], direction: 'east' },
-                { iconKey: 'BUILDING', points: [[0, 7], [5, 0]] }
+                { iconKey: 'BUILDING', points: [[0, 7], [5, 0]], direction: null }
             ],
-            lanes: {
-                fast: { startRow: 0, endRow: 2 },
-                slow: { startRow: 3, endRow: 5 }
-            }
+            // lanes: {
+            //     fast: { startRow: 0, endRow: 2 },
+            //     slow: { startRow: 3, endRow: 5 }
+            // }
         },
         vehicles: {
             rows: 8,
@@ -29,17 +29,17 @@ const FeatureDemo: React.FC = () => {
             startPoint: [1, 0],
             endPoint: [6, 9],
             obstacles: [
-                { iconKey: 'CAR', points: [[1, 0]], direction: 'east', lane: 'fast' },
-                { iconKey: 'BUS', points: [[5, 0]], direction: 'east', lane: 'slow' },
+                { iconKey: 'CAR', points: [[1, 0]], direction: 'east' },
+                { iconKey: 'BUS', points: [[5, 0]], direction: 'east', },
                 { iconKey: 'ROAD', points: [[1, 1], [1, 2], [1, 3]], direction: 'east' },
                 { iconKey: 'ROAD', points: [[5, 1], [5, 2], [5, 3]], direction: 'east' },
                 { iconKey: 'TREE', points: [[0, 5], [7, 5]] },
                 { iconKey: 'CITY', points: [[0, 9], [7, 9]] }
             ],
-            lanes: {
-                fast: { startRow: 0, endRow: 3 },
-                slow: { startRow: 4, endRow: 7 }
-            }
+            // lanes: {
+            //     fast: { startRow: 0, endRow: 3 },
+            //     slow: { startRow: 4, endRow: 7 }
+            // }
         },
         directions: {
             rows: 6,
@@ -53,10 +53,10 @@ const FeatureDemo: React.FC = () => {
                 { iconKey: 'CAR', points: [[1, 1]], direction: 'east' },
                 { iconKey: 'BUS', points: [[2, 2]], direction: 'south' }
             ],
-            lanes: {
-                fast: { startRow: 0, endRow: 2 },
-                slow: { startRow: 3, endRow: 5 }
-            }
+            // lanes: {
+            //     fast: { startRow: 0, endRow: 2 },
+            //     slow: { startRow: 3, endRow: 5 }
+            // }
         }
     };
 
@@ -111,7 +111,7 @@ const FeatureDemo: React.FC = () => {
                 </Typography>
             </Box>
 
-            <CityGrid 
+            <CityGrid_B
                 {...currentDemo}
                 // Pass vehicle type for lane-specific pathfinding
                 // This would need to be handled in the parent component

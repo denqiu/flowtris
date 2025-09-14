@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { GridProps, MatrixRequest, MatrixIconsRequest } from "../../shared/types/grid";
+import { GridProps_A, GridProps_B, MatrixRequest_A, MatrixRequest_B, MatrixIconsRequest } from "../../shared/types/grid";
 import { Box, Paper } from "@mui/material";
 import { renderIcon } from "../utils/Icons";
 import Spinner from "./Spinner";
-import useMatrixPaths from "../hooks/grid/useMatrixPaths";
+import { useMatrixPaths_A, useMatrixPaths_B } from "../hooks/grid/useMatrixPaths";
 import useMatrixIcons from "../hooks/grid/useMatrixIcons";
 
 /**
@@ -20,18 +20,19 @@ const getRotationForDirection = (direction: string): number => {
 };
 
 /**
- * Render grid with A* path if matrix, startPoint, and endPoint are provided. Otherwise don't update render.
+ * Render grid with A* path if matrix and paths are provided. Otherwise don't update render.
  * Assume grid props to be already initialized.
+ * 
+ * @deprecated
  */
-// const CityGrid: React.FC<GridProps> = ({ rows, columns, matrix, obstacles, startPoint, endPoint, lanes }) => {
-const CityGrid: React.FC<GridProps> = ({ 
+const CityGrid_A: React.FC<GridProps_A> = ({ 
     rows, columns, matrix, obstacles, paths // Required
 }) => {
     const [error, setError] = useState<string | null>(null);
-    const { updateMatrix, fetchMatrixPaths } = useMatrixPaths({ setError });
+    const { updateMatrix, fetchMatrixPaths } = useMatrixPaths_A({ setError });
     const { matrixIcons, fetchMatrixIcons } = useMatrixIcons({ setError });
     useEffect(() => {
-        void fetchMatrixPaths({matrix, paths} as MatrixRequest);
+        void fetchMatrixPaths({matrix, paths} as MatrixRequest_A);
         void fetchMatrixIcons({ rows, columns, obstacles } as MatrixIconsRequest);
     }, [fetchMatrixPaths, matrix, paths, fetchMatrixIcons, rows, columns, obstacles]);
 
@@ -42,14 +43,6 @@ const CityGrid: React.FC<GridProps> = ({
         const cells: React.ReactNode[] = [];
         updateMatrix.forEach((row, rowIndex) => {
             row.forEach((cellValue, columnIndex) => {
-                // const isInFastLane = lanes?.fast && rowIndex >= lanes.fast.startRow && rowIndex <= lanes.fast.endRow;
-                // const isInSlowLane = lanes?.slow && rowIndex >= lanes.slow.startRow && rowIndex <= lanes.slow.endRow;
-                
-                // Determine cell background color based on lane
-                // let backgroundColor = '#f5f5f5'; // Default
-                // if (isInFastLane) backgroundColor = '#e3f2fd'; // Light blue for fast lane
-                // if (isInSlowLane) backgroundColor = '#f3e5f5'; // Light purple for slow lane
-
                 cells.push(
                     <Box key={`${rowIndex}-${columnIndex}`}> 
                         <Paper 
@@ -59,13 +52,8 @@ const CityGrid: React.FC<GridProps> = ({
                                 display: 'flex', 
                                 alignItems: 'center', 
                                 justifyContent: 'center',
-                                // backgroundColor: backgroundColor,
-                                // border: cellValue >= 2 ? '2px solid #4caf50' : '1px solid #ddd' // Green border for path
                             }}
                         >
-                            {/* {iconData ? renderIcon(iconData.iconKey, iconData.direction) : 
-                            cellValue >= 2 ? '🚗' : cellValue === 1 ? '🚧' : ''} */}
-
                             {renderIcon(matrixIcons[rowIndex]?.[columnIndex])}
                         </Paper>
                     </Box>
@@ -75,20 +63,75 @@ const CityGrid: React.FC<GridProps> = ({
         return cells;
     }, [updateMatrix, matrixIcons]);
 
-    // Create matrix for icons with proper coordinate mapping
-    // const matrixIcons: (object | null)[][] = Array.from({ length: rows }, () => Array(columns).fill(null));
-    // obstacles?.forEach(obstacle => {
-    //     obstacle.points.forEach(([row, col]) => {
-    //         if (matrixIcons[row] && matrixIcons[row][col] !== undefined) {
-    //             matrixIcons[row][col] = {
-    //                 iconKey: obstacle.iconKey,
-    //                 direction: obstacle.direction,
-    //                 lane: obstacle.lane
-    //             }; 
-    //         }
-    //     });
-    // });
-    
+    if (!updateMatrix) {
+        return <div>Invalid arguments</div>;
+    }
+    if (!matrixIcons) {
+        return <Spinner />;
+    }
+    return (
+        <div>
+            {error && <p>{error}</p>}
+            <Box sx={{ 
+                display: 'grid', 
+                gridTemplateColumns: `repeat(${columns}, 1fr)`, 
+                gap: 1,
+                maxWidth: '600px', // Set max width
+                margin: '0 auto'   // Center the grid
+            }}>
+                {getCells}
+            </Box>
+        </div>
+    );
+};
+
+
+/**
+ * Render grid with A* path if matrix, startPoint, and endPoint are provided. Otherwise don't update render.
+ * Assume grid props to be already initialized.
+ */
+const CityGrid_B: React.FC<GridProps_B> = ({ 
+    rows, columns, matrix, obstacles, potholeCount, // Required
+    startPoint, endPoint, isAutobahn // Optional
+}) => {
+    const [error, setError] = useState<string | null>(null);
+    const { updateMatrix, selectedPath, potholes, fetchMatrixPaths } = useMatrixPaths_B({ setError });
+    const { matrixIcons, fetchMatrixIcons } = useMatrixIcons({ setError });
+    useEffect(() => {
+        void fetchMatrixPaths({matrix, startPoint, endPoint} as MatrixRequest_B);
+        if (potholes && obstacles) {
+            obstacles.push({ iconKey: 'POTHOLE', points: potholes, direction: null });
+        }
+        void fetchMatrixIcons({ rows, columns, obstacles } as MatrixIconsRequest);
+    }, [fetchMatrixPaths, matrix, startPoint, endPoint, fetchMatrixIcons, rows, columns, obstacles, potholes]);
+
+    const getCells: React.ReactNode[] | null = useMemo(() => {
+        if (!updateMatrix || !matrixIcons) {
+            return null;
+        }
+        const cells: React.ReactNode[] = [];
+        updateMatrix.forEach((row, rowIndex) => {
+            row.forEach((cellValue, columnIndex) => {
+                cells.push(
+                    <Box key={`${rowIndex}-${columnIndex}`}> 
+                        <Paper 
+                            elevation={1} 
+                            style={{ 
+                                aspectRatio: '1 / 1', 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center',
+                            }}
+                        >
+                            {renderIcon(matrixIcons[rowIndex]?.[columnIndex])}
+                        </Paper>
+                    </Box>
+                );
+            });
+        });   
+        return cells;
+    }, [updateMatrix, matrixIcons]);
+
     if (!updateMatrix) {
         return <div>Invalid arguments</div>;
     }
@@ -135,12 +178,11 @@ const TestCityGrid: React.FC = () => {
         <React.Fragment>
             {grids.map(grid => {
                 return (
-                    <CityGrid {...grid} />
+                    <CityGrid_A {...grid} />
                 )
             })}
         </React.Fragment>
     );
 };
 
-export default CityGrid;
-export { TestCityGrid };
+export { CityGrid_A, CityGrid_B, TestCityGrid };

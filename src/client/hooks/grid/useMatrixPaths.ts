@@ -1,34 +1,25 @@
 import { useState, useCallback } from 'react';
-import type { MatrixResponse, MatrixRequest } from '../../../shared/types/grid';
+import type { MatrixResponse, MatrixRequest_A, MatrixRequest_B } from '../../../shared/types/grid';
 import { SharedGridState } from "../../../shared/state/grid"
-
-// interface LaneAStarRequest extends MatrixRequest {
-//     vehicleType?: 'car' | 'bus';
-//     lanes?: {
-//         fast: { startRow: number; endRow: number };
-//         slow: { startRow: number; endRow: number };
-//     };
-// }
 
 /**
  * If success, update render with path in matrix. If error, don't update render and keep previous matrix with path if available.
+ * 
+ * @deprecated
  */
-const useMatrixPaths = ({ setError }: SharedGridState) => {
+const useMatrixPaths_A = ({ setError }: SharedGridState) => {
     const [updateMatrix, setUpdateMatrix] = useState<number[][] | null>([]);
     const [selectedPath, setSelectedPath] = useState<[number, number][]>([]);
     const fetchMatrixPaths = useCallback(
-        // async (request: Partial<LaneAStarRequest>) => {
-        async (request: Partial<MatrixRequest>) => {
-            // const { matrix, startPoint, endPoint, vehicleType, lanes } = request;
+        async (request: Partial<MatrixRequest_A>) => {
             const { matrix, paths } = request;
             try {
                 if (matrix) {
                     setUpdateMatrix(matrix);
                     if (paths && paths.selectedPathIndex >= 0 && paths.selectedPathIndex < paths.points.length) {
-                        const res = await fetch('/api/grid/paths', {
+                        const res = await fetch('/api/grid/paths/A', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            // body: JSON.stringify({ matrix, startPoint, endPoint, vehicleType, lanes }),
                             body: JSON.stringify(request)
                         });
                         const data: MatrixResponse = await res.json();
@@ -49,4 +40,50 @@ const useMatrixPaths = ({ setError }: SharedGridState) => {
     return { updateMatrix, fetchMatrixPaths } as const;
 };
 
-export default useMatrixPaths;
+
+/**
+ * If success, update render with path in matrix. If error, don't update render and keep previous matrix with path if available.
+ */
+const useMatrixPaths_B = ({ setError }: SharedGridState) => {
+    const [updateMatrix, setUpdateMatrix] = useState<number[][] | null>([]);
+    const [selectedPath, setSelectedPath] = useState<[number, number][] | null>(null);
+    const [potholes, setPotholes] = useState<[number, number][] | null>(null);
+    const fetchMatrixPaths = useCallback(
+        async (request: Partial<MatrixRequest_B>) => {
+            const { matrix, startPoint, endPoint } = request;
+            try {
+                if (matrix) {
+                    setUpdateMatrix(matrix);
+                    setSelectedPath(null);
+                    setPotholes(null);
+                    if (startPoint && endPoint) {
+                        const res = await fetch('/api/grid/paths/B', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(request)
+                        });
+                        const data: MatrixResponse = await res.json();
+                        setUpdateMatrix(data.matrix);
+                        setSelectedPath(data.selectedPath);
+                        setPotholes(data.potholes);
+                    }
+                    setError(null);
+                } else {
+                    setUpdateMatrix(null);
+                    setSelectedPath(null);
+                    setPotholes(null);
+                    setError("Error: Matrix is required.");
+                }
+            } catch (err) {
+                console.error(err);
+                setUpdateMatrix(null);
+                setSelectedPath(null);
+                setPotholes(null);
+                setError("Error: Grid failed to load paths.");
+            }
+        }
+    , [setError]);
+    return { updateMatrix, selectedPath, potholes, fetchMatrixPaths } as const;
+};
+
+export { useMatrixPaths_A, useMatrixPaths_B };

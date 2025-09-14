@@ -6,7 +6,7 @@ import { PlayArrow, Star, Construction, People } from '@mui/icons-material';
 import { useLevelManager } from './hooks/useLevelManager';
 import LevelSelector from './components/LevelSelector';
 import GameHUD from './components/GameHUD';
-import CityGrid, { TestCityGrid } from './components/CityGrid';
+import { CityGrid_A, CityGrid_B, TestCityGrid } from './components/CityGrid';
 import LevelCompleteDialog from './components/LevelCompleteDialog';
 import { DemoControls } from './components/DemoControls';
 import FeatureDemo from './components/FeatureDemo';
@@ -160,7 +160,7 @@ export const App = () => {
 
             {/* Game Grid */}
             <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
-              <CityGrid {...currentLevel.gridProps} />
+              <CityGrid_B {...currentLevel.gridProps} />
               {/* <TestCityGrid /> */}
             </Box>
 

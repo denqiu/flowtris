@@ -29,12 +29,16 @@ export type MatrixPath = {
     isAutobahn: boolean;
 };
 
-export type MatrixRequest = {
+export type MatrixRequest_A = {
     matrix?: number[][];
     paths?: {
         points: MatrixPath[];
         selectedPathIndex: number;
     }
+};
+
+export type MatrixRequest_B = MatrixPath & {
+    matrix?: number[][];
 };
 
 export type MatrixResponse = {
@@ -48,8 +52,7 @@ export type MatrixResponse = {
 export type MatrixObstacle = {
     iconKey: IconKey;
     points: [number, number][];
-    direction?: string;
-    // lane?: 'fast' | 'slow';
+    direction: string | null;
 };
 
 export type MatrixIconsRequest = {
@@ -72,20 +75,24 @@ export type MatrixDirectionsResponse = {
     message: string;
 }
 
-export interface GridProps extends Partial<MatrixRequest>, Partial<MatrixIconsRequest> {
+/**
+ * @deprecated
+ */
+export interface GridProps_A extends Partial<MatrixRequest_A>, Partial<MatrixIconsRequest> {
     id?: string;
-    // obstacles?: { iconKey: IconKey; points: [number, number][]; direction?: string; lane?: 'fast' | 'slow' }[];
-    // lanes?: {
-    //     fast: { startRow: number; endRow: number };
-    //     slow: { startRow: number; endRow: number };
-    // };
+}
+
+export interface GridProps_B extends Partial<MatrixRequest_B>, Partial<MatrixIconsRequest> {
+    id?: string;
 }
 
 /**
  * Ensure that grid props has defined id, rows, columns, obstacles, matrix, and paths.
- * 0 = Open cell (Walkable), 1 = Closed cell (Obstacle), 2+ = Path cell from start to finish (in server/grid)
+ * 0 = Open cell (Walkable), 1 = Closed cell (Obstacle)
+ * 
+ * @deprecated
  */
-export const InitGridProps = (id: string, totalPotholes: number, props: GridProps) => {
+export const InitGridProps_A = (id: string, totalPotholes: number, props: GridProps_A) => {
     let { rows, columns, matrix } = props;
     const { paths } = props;
     if (matrix) {
@@ -121,5 +128,53 @@ export const InitGridProps = (id: string, totalPotholes: number, props: GridProp
         matrix,
         obstacles: props.obstacles || [],
         paths: paths || { points: [], selectedPathIndex: -1 }
-    } as GridProps;
+    } as GridProps_A;
+};
+
+/**
+ * Ensure that grid props has defined id, rows, columns, obstacles, matrix, and potholes.
+ * 
+ * Start point, end point, and is Autobahn are optional.
+ * 
+ * 0 = Open cell (Walkable), 1 = Closed cell (Obstacle), 2+ = Path cell from start to finish (in server/grid)
+ */
+export const InitGridProps_B = (id: string, totalPotholes: number, props: GridProps_B) => {
+    let { rows, columns, matrix, potholeCount } = props;
+    const { startPoint, endPoint } = props;
+    if (matrix) {
+        rows = matrix.length;
+        if (matrix[0]) {
+            columns = matrix[0].length; 
+        }
+    }
+    if (!matrix && rows && columns) {
+        matrix = Array.from({ length: rows }, () => Array(columns).fill(0));
+    }
+    if (!matrix) {
+        // Leave props as is. Let CityGrid use !matrix.
+        return props;
+    }
+    props.obstacles?.flatMap(obstacle => obstacle.points).forEach(([y, x]) => {
+        // For pathfinding lib to register point as obstacle. It considers everything else not 1's as walkable. 2+ for path is my own idea, not from author of pathfinding.
+        if (matrix[x]) {
+            matrix[x][y] = 1; 
+        }
+    });
+    if (startPoint && endPoint) {
+        // Randomize path's pothole count, decrease total, and repeat.
+        potholeCount = (totalPotholes <= 1) ? totalPotholes : Math.floor(Math.random() * totalPotholes) + 1;
+    }
+    return {
+        // Required
+        id,
+        rows,
+        columns,
+        matrix,
+        potholeCount,
+        obstacles: props.obstacles || [],
+        // Optional
+        startPoint: props.startPoint,
+        endPoint: props.endPoint,
+        isAutobahn: props.isAutobahn
+    } as GridProps_B;
 };

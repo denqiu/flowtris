@@ -1,4 +1,4 @@
-import { GridProps } from './grid';
+import { GridProps_A, GridProps_B } from './grid';
 
 export type Difficulty = 'easy' | 'medium' | 'hard' | 'endless';
 
@@ -13,7 +13,7 @@ export interface LevelConfig {
   difficulty: Difficulty;
   gameMode: GameMode;
   timeLimit?: number; // in seconds, undefined for unlimited
-  gridProps: GridProps;
+  gridProps: GridProps_B;
   objectives: {
     peopleToTransport: number;
     potholesToFill: number | null;

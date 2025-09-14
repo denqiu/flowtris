@@ -1,4 +1,4 @@
-import { InitGridProps } from '../types/grid';
+import { InitGridProps_A, InitGridProps_B } from '../types/grid';
 import { LevelConfig, LevelPack, Difficulty, GameMode } from '../types/level';
 
 // Predefined level configurations.
@@ -179,7 +179,7 @@ export const LEVELS: LevelConfig[] = [
 ];
 
 for (const level of LEVELS) {
-  level.gridProps = InitGridProps(level.id, level.objectives.potholesToFill || 0, level.gridProps);
+  level.gridProps = InitGridProps_B(level.id, level.objectives.potholesToFill || 0, level.gridProps);
 }
 
 // Level packs for progression
