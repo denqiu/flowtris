@@ -15,6 +15,7 @@ app.use(express.text());
 
 const router = express.Router();
 
+Grid.Matrix(router);
 Grid.MatrixPaths_A(router);
 Grid.MatrixPaths_B(router);
 Grid.MatrixIcons(router);

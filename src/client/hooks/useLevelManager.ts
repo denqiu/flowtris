@@ -21,7 +21,7 @@ export const useLevelManager = () => {
     levelStats: new Map(),
     totalStars: 0,
     unlockedPacks: ['tutorial'], // Tutorial pack always unlocked
-  selectedPack: 'tutorial',
+    selectedPack: 'tutorial',
   });
 
   const gameTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -80,7 +80,7 @@ export const useLevelManager = () => {
       currentLevel: levelId,
       score: 0,
       peopleTransported: 0,
-      potholesFilled: 0,
+      potholeCount: level.objectives.potholeCount || 0,
       movesUsed: 0,
       // initialize movesLeft from objectives.maxMoves (null = unlimited)
       movesLeft: level.objectives?.maxMoves ?? null,
@@ -212,7 +212,7 @@ export const useLevelManager = () => {
   }, []);
 
   // Complete the current level
-  const completeLevel = useCallback((finalScore: number, peopleTransported: number, potholesFilled: number) => {
+  const completeLevel = useCallback((finalScore: number, peopleTransported: number, potholeCount: number) => {
     if (gameTimerRef.current) {
       clearInterval(gameTimerRef.current);
       gameTimerRef.current = null;
@@ -246,7 +246,7 @@ export const useLevelManager = () => {
       }
       
       // Third star for bonus objectives
-      if (potholesFilled >= (objectives.potholesToFill || 0) && starsEarned >= 2) {
+      if (potholeCount === 0 && starsEarned >= 2) {
         starsEarned = 3;
       }
 
@@ -254,7 +254,7 @@ export const useLevelManager = () => {
         ...gameProgress,
         score: finalScore,
         peopleTransported,
-        potholesFilled,
+        potholeCount,
         starsEarned,
         gameState: 'completed',
         endTime,

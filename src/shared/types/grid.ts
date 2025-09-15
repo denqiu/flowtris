@@ -1,4 +1,4 @@
-import { GameState } from "./level";
+import { GameProgress } from "./level";
 
 export type IconDirection = 'up' | 'down' | 'left' | 'right';
 
@@ -99,6 +99,7 @@ export type MatrixResponse = {
     matrix: number[][];
     selectedPath: [number, number][];
     potholes: [number, number][];
+    matrixIcons: IconKey[][];
     status: string;
     message: string;
 };
@@ -113,6 +114,7 @@ export type MatrixIconsRequest = {
     rows?: number;
     columns?: number;
     obstacles?: MatrixObstacle[];
+    potholesForIcons?: [number, number][];
 }
 
 export type MatrixIconsResponse = {
@@ -138,7 +140,7 @@ export interface GridProps_A extends Partial<MatrixRequest_A>, Partial<MatrixIco
 
 export interface GridProps_B extends Partial<MatrixRequest_B>, Partial<MatrixIconsRequest> {
     id?: string;
-    gameState?: GameState;
+    gameProgress?: GameProgress;
 }
 
 /**
@@ -187,15 +189,16 @@ export const InitGridProps_A = (id: string, totalPotholes: number, props: GridPr
 };
 
 /**
- * Ensure that grid props has defined id, rows, columns, obstacles, matrix, and potholes.
+ * Ensure that grid props has defined id, rows, columns, obstacles, matrix, startPoint, endPoint.
  * 
- * Start point, end point, and is Autobahn are optional.
+ * No need to config potholes. Let GameProgress handle that.
+ * 
+ * isAutobahn are optional.
  * 
  * 0 = Open cell (Walkable), 1 = Closed cell (Obstacle), 2+ = Path cell from start to finish (in server/grid)
  */
-export const InitGridProps_B = (id: string, totalPotholes: number, props: GridProps_B) => {
-    let { rows, columns, matrix, potholeCount } = props;
-    const { startPoint, endPoint } = props;
+export const InitGridProps_B = (id: string, props: GridProps_B) => {
+    let { rows, columns, matrix } = props;
     if (matrix) {
         rows = matrix.length;
         if (matrix[0]) {
@@ -215,21 +218,16 @@ export const InitGridProps_B = (id: string, totalPotholes: number, props: GridPr
             matrix[x][y] = 1; 
         }
     });
-    if (startPoint && endPoint) {
-        // Randomize path's pothole count, decrease total, and repeat.
-        potholeCount = (totalPotholes <= 1) ? totalPotholes : Math.floor(Math.random() * totalPotholes) + 1;
-    }
     return {
         // Required
         id,
         rows,
         columns,
         matrix,
-        potholeCount,
         obstacles: props.obstacles || [],
+        startPoint: props.startPoint || [0,0],
+        endPoint: props.endPoint || [columns && columns-1, rows && rows-1],
         // Optional
-        startPoint: props.startPoint,
-        endPoint: props.endPoint,
         isAutobahn: props.isAutobahn
     } as GridProps_B;
 };

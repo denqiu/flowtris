@@ -235,11 +235,11 @@ const LevelSelector: React.FC<LevelSelectorProps> = ({
                         <Typography variant="body2" color="text.secondary">
                           {progress.completed ? progress.stars + ' stars' : `0`}
                         </Typography>
-                      {level.objectives.potholesToFill && level.objectives.potholesToFill > 0 && (
+                      {level.objectives.potholeCount && level.objectives.potholeCount > 0 && (
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                           <Construction fontSize="small" />
                           <Typography variant="body2">
-                            {level.objectives.potholesToFill}
+                            {level.objectives.potholeCount}
                           </Typography>
                         </Box>
                       )}
@@ -302,10 +302,10 @@ const LevelSelector: React.FC<LevelSelectorProps> = ({
                     <People />
                     <Typography>Transport {selectedLevel.objectives.peopleToTransport} people</Typography>
                   </Box>
-                  {selectedLevel.objectives.potholesToFill && selectedLevel.objectives.potholesToFill > 0 && (
+                  {selectedLevel.objectives.potholeCount && selectedLevel.objectives.potholeCount > 0 && (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <Construction />
-                      <Typography>Fill {selectedLevel.objectives.potholesToFill} potholes</Typography>
+                      <Typography>Found {selectedLevel.objectives.potholeCount} potholes</Typography>
                     </Box>
                   )}
                   {selectedLevel.objectives.maxMoves && (

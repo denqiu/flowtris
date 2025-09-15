@@ -5,6 +5,7 @@ import { renderIcon } from "../utils/Icons";
 import Spinner from "./Spinner";
 import { useMatrixPaths_A, useMatrixPaths_B } from "../hooks/grid/useMatrixPaths";
 import useMatrixIcons from "../hooks/grid/useMatrixIcons";
+import { useMatrix_B } from "../hooks/grid/useMatrix";
 
 /**
  * Get rotation angle for direction
@@ -91,23 +92,26 @@ const CityGrid_A: React.FC<GridProps_A> = ({
  * Assume grid props to be already initialized.
  */
 const CityGrid_B: React.FC<GridProps_B> = ({ 
-    rows, columns, matrix, obstacles, potholeCount, // Required
-    gameState, // Required
-    startPoint, endPoint, isAutobahn // Optional
+    rows, columns, matrix, obstacles, startPoint, endPoint, // Required
+    gameProgress, // Required
+    isAutobahn // Optional
 }) => {
+    const { potholeCount } = gameProgress || {};
     const [error, setError] = useState<string | null>(null);
-    const { updateMatrix, selectedPath, potholes, fetchMatrixPaths } = useMatrixPaths_B({ setError });
-    const { matrixIcons, fetchMatrixIcons } = useMatrixIcons({ setError });
+    const { updateMatrix, selectedPath, matrixIcons, fetchMatrix } = useMatrix_B({ setError });
+    // const { updateMatrix, selectedPath, potholesForIcons, fetchMatrixPaths } = useMatrixPaths_B({ setError });
+    // const { matrixIcons, fetchMatrixIcons } = useMatrixIcons({ setError });
 
     // fetch path animation here?
 
+    // useEffect(() => {
+    //     void fetchMatrixPaths({matrix, potholeCount: gameProgress?.potholeCount, startPoint, endPoint} as MatrixRequest_B);
+    //     void fetchMatrixIcons({ rows, columns, obstacles, potholesForIcons } as MatrixIconsRequest);
+    // }, [fetchMatrixPaths, matrix, startPoint, endPoint, gameProgress, matrixIcons, fetchMatrixIcons, rows, columns, obstacles, potholesForIcons, selectedPath]);
+
     useEffect(() => {
-        void fetchMatrixPaths({matrix, potholeCount, startPoint, endPoint} as MatrixRequest_B);
-        if (selectedPath) {
-            // This means we can pass in potholes from the selected path.
-            void fetchMatrixIcons(potholes, { rows, columns, obstacles } as MatrixIconsRequest);
-        }
-    }, [fetchMatrixPaths, matrix, potholeCount, startPoint, endPoint, fetchMatrixIcons, rows, columns, obstacles, potholes, selectedPath]);
+        void fetchMatrix({matrix, potholeCount, startPoint, endPoint, rows, columns, obstacles} as MatrixRequest_B & MatrixIconsRequest)
+    }, [fetchMatrix, matrix, startPoint, endPoint, potholeCount, rows, columns, obstacles]);
 
     const getCells: React.ReactNode[] | null = useMemo(() => {
         if (!updateMatrix || !matrixIcons) {

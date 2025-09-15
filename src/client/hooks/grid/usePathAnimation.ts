@@ -9,7 +9,7 @@ const usePathAnimation = (
   const [currentPathIndex, setCurrentPathIndex] = useState<number | null>(
     selectedPath ? 0 : null
   );
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // clear interval helper
   const clearAnimInterval = () => {

@@ -81,7 +81,7 @@ export const App = () => {
     if (currentLevel && gameProgress) {
       const mockScore = Math.floor(Math.random() * 1000) + 500;
       const mockPeople = currentLevel.objectives.peopleToTransport;
-      const mockPotholes = currentLevel.objectives.potholesToFill || 0;
+      const mockPotholes = currentLevel.objectives.potholeCount || 0;
       
       completeLevel(mockScore, mockPeople, mockPotholes);
     }
@@ -136,7 +136,7 @@ export const App = () => {
 
   // Show game interface
   if (currentLevel && gameProgress) {
-    currentLevel.gridProps.gameState = gameProgress.gameState;
+    currentLevel.gridProps.gameProgress = gameProgress;
   return (
       <Box sx={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
         <GameHUD
@@ -173,7 +173,7 @@ export const App = () => {
                   score: gameProgress.score + 100 
                 })}
                 onFillPothole={() => updateProgress({ 
-                  potholesFilled: gameProgress.potholesFilled + 1,
+                  potholeCount: gameProgress.potholeCount - 1,
                   score: gameProgress.score + 50 
                 })}
                 onUseMove={() => {
@@ -188,7 +188,7 @@ export const App = () => {
                 onComplete={handleMockComplete}
                 onFail={handleMockFail}
                 disableTransport={currentLevel ? gameProgress.peopleTransported >= currentLevel.objectives.peopleToTransport : false}
-                disablePothole={currentLevel ? (currentLevel.objectives.potholesToFill ? gameProgress.potholesFilled >= currentLevel.objectives.potholesToFill : false) : false}
+                disablePothole={currentLevel ? gameProgress.potholeCount === 0 : false}
               />
             </Box>
 

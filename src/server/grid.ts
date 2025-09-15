@@ -148,10 +148,12 @@ function MatrixPaths_B(router: express.Router) {
         Required<MatrixRequest_B> // Request type
     >
     ('/api/grid/paths/B', async (req, res): Promise<void> => {
-        // Use level id to retrieve matrix or if matrix doesn't exist continue to request body.
         const { id } = req.params;
-
         const { matrix, startPoint, endPoint, potholeCount } = req.body;
+
+        // Use level id to retrieve matrix or if matrix doesn't exist continue to request body.
+        // check if pothole count === potholes.length from db. If false modify potholes and save to db
+
         const grid = new PF.Grid(matrix);
         if ([startPoint, endPoint].every(([x, y]) => grid.isInside(x, y) && grid.isWalkableAt(x, y))) {
             const finder = new PF.AStarFinder();
@@ -206,8 +208,9 @@ function MatrixIcons(router: express.Router) {
     >
     ('/api/grid/icons', async (req, res): Promise<void> => {
         const { id } = req.params;
-        
-        const { rows, columns, obstacles } = req.body;
+        const { rows, columns, obstacles, potholesForIcons } = req.body;
+
+        // get matrix icons from db
         const matrixIcons: IconKey[][] = Array.from({ length: rows }, () => Array(columns).fill('ROAD'));
         obstacles.forEach(obstacle => {
             obstacle.points.forEach(([y, x]) => {
@@ -215,6 +218,11 @@ function MatrixIcons(router: express.Router) {
                     matrixIcons[x][y] = obstacle.iconKey;
                 }
             });
+        });
+        potholesForIcons.forEach(([y, x]) => {
+            if (matrixIcons[x]) {
+                matrixIcons[x][y] = 'POTHOLE';
+            }
         });
         res.json({
             matrix: matrixIcons,
@@ -235,4 +243,87 @@ function MatrixDirections(router: express.Router) {
     });
 }
 
-export { MatrixPaths_A, MatrixPaths_B, MatrixIcons, MatrixDirections };
+/**
+ * Running into issues where fetching matrix icons is having problems with payload, insufficient resources because of potholesForIcons. Maybe it's not necessary to pass back to client and just enforce creation of matrix icons after potholesForIcons in one big function rather than divide into 2 separate functions.
+ * 
+ * Edit: Resolved issue where gameProgress being passed to gridProps was commented out. Uncommenting the line fixed this issue. Now back to using the 2 separate functions.
+ * 
+ * Edit 2: Testing on level with 1 pothole shows pothole rapidly moving all over the place because of 2 functions and randomized pothole selection. Switching to this function resolves this problem.
+ * 
+ * Edit 3: Do not pass gameProgress to CityGrid useEffect. Just pass potholeCount. This way, grid won't re-render on pause/resume.
+ */
+function Matrix(router: express.Router) {
+    router.post<
+        { id: string }, // URL parameters
+        MatrixResponse | { status: string; }, // Response type
+        Required<MatrixRequest_B> & Required<MatrixIconsRequest> // Request type
+    >
+    ('/api/grid/B', async (req, res): Promise<void> => {
+        const { id } = req.params;
+        const { matrix, startPoint, endPoint, potholeCount, rows, columns, obstacles } = req.body;
+
+        // Use level id to retrieve matrix or if matrix doesn't exist continue to request body.
+        // get matrix icons from db
+
+        const grid = new PF.Grid(matrix);
+        if ([startPoint, endPoint].every(([x, y]) => grid.isInside(x, y) && grid.isWalkableAt(x, y))) {
+            const finder = new PF.AStarFinder();
+            const path = finder.findPath(...startPoint, ...endPoint, grid) as [number, number][];
+            const potholesForIcons: [number, number][] = [];
+            const indices: number[] = [];
+            let randomIndex;
+            for (let i = 0; i < potholeCount; i++) {
+                randomIndex = Math.floor(Math.random() * path.length);
+                indices.push(randomIndex);
+                const pothole = path[randomIndex];
+                if (pothole) {
+                    potholesForIcons.push(pothole);
+                }
+            }
+            // Exclude pothole points on path. Set other points on path to 0 (open).
+            path.filter((_, index) => !indices.includes(index)).forEach(([y, x]) => {
+                if (matrix[x]) {
+                    matrix[x][y] = 0; 
+                }
+            });
+            potholesForIcons.forEach(([y, x]) => {
+                if (matrix[x]) {
+                    matrix[x][y] = 1;
+                }
+            });
+
+            const matrixIcons: IconKey[][] = Array.from({ length: rows }, () => Array(columns).fill('ROAD'));
+            obstacles.forEach(obstacle => {
+                obstacle.points.forEach(([y, x]) => {
+                    if (matrixIcons[x]) {
+                        matrixIcons[x][y] = obstacle.iconKey;
+                    }
+                });
+            });
+            potholesForIcons.forEach(([y, x]) => {
+                if (matrixIcons[x]) {
+                    matrixIcons[x][y] = 'POTHOLE';
+                }
+            });
+
+            // Store in sqlite.
+            const result = {
+                matrix: matrix,
+                selectedPath: path,
+                matrixIcons: matrixIcons
+            };
+            res.json({
+                ...result,
+                status: 'success',
+                message: 'Successfully loaded matrix',
+            });
+        } else {
+            console.error('Start point or end point is out of bounds.');
+            res.status(400).json({
+                status: 'error'
+            });
+        }
+    });
+}
+
+export { Matrix, MatrixPaths_A, MatrixPaths_B, MatrixIcons, MatrixDirections };
