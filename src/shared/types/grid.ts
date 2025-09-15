@@ -146,13 +146,13 @@ export const ICONS = {
     BUILDING: {
         type: 'component',
         rotate: null,
-        name: 'Business',
+        name: 'Apartment',
         directions: null
     },
     TREE: {
         type: 'component',
         rotate: null,
-        name: 'Park',
+        name: 'Forest',
         directions: null
     },
     CITY: {
@@ -196,6 +196,24 @@ export type MatrixResponse = {
     potholes: [number, number][];
     status: string;
     message: string;
+    pathMetrics?: {
+        totalMoves: number;
+        estimatedMoves: number;
+        efficiency: number; // 0-1 scale
+        alternativePaths?: number;
+    };
+};
+
+export type PathMovesCalculation = {
+    pathLength: number;
+    estimatedMoves: number;
+    efficiency: number;
+    alternativeRoutes: number;
+    moveBreakdown: {
+        navigationMoves: number;
+        potholeRepairs: number;
+        peoplePickup: number;
+    };
 };
 
 export type MatrixObstacle = {

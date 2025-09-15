@@ -7,8 +7,9 @@
 }
 
 .spinner {
-	font-size: 48px;
+	font-size: 72px; /* Larger size to fit grid better */
 	animation: spin 1s linear infinite;
+	color: #1e88e5; /* Blue color for better visibility */
 }
 
 @keyframes spin {
