@@ -1,3 +1,4 @@
+import { showToast } from "@devvit/web/client";
 import React, { useEffect, useState, useMemo } from "react";
 import { GridProps_A, GridProps_B, MatrixRequest_A, MatrixRequest_B, MatrixIconsRequest } from "../../shared/types/grid";
 import { Box, Paper } from "@mui/material";
@@ -34,7 +35,7 @@ const CityGrid_A: React.FC<GridProps_A> = ({
     const { matrixIcons, fetchMatrixIcons } = useMatrixIcons({ setError });
     useEffect(() => {
         void fetchMatrixPaths({matrix, paths} as MatrixRequest_A);
-        void fetchMatrixIcons(null, { rows, columns, obstacles, } as MatrixIconsRequest);
+        void fetchMatrixIcons({ rows, columns, obstacles, } as MatrixIconsRequest);
     }, [fetchMatrixPaths, matrix, paths, fetchMatrixIcons, rows, columns, obstacles]);
 
     const getCells: React.ReactNode[] | null = useMemo(() => {
@@ -110,8 +111,11 @@ const CityGrid_B: React.FC<GridProps_B> = ({
     // }, [fetchMatrixPaths, matrix, startPoint, endPoint, gameProgress, matrixIcons, fetchMatrixIcons, rows, columns, obstacles, potholesForIcons, selectedPath]);
 
     useEffect(() => {
+        if (error) {
+            showToast({ text: error, appearance: 'neutral' });
+        }
         void fetchMatrix({matrix, potholeCount, startPoint, endPoint, rows, columns, obstacles} as MatrixRequest_B & MatrixIconsRequest)
-    }, [fetchMatrix, matrix, startPoint, endPoint, potholeCount, rows, columns, obstacles]);
+    }, [fetchMatrix, matrix, startPoint, endPoint, potholeCount, rows, columns, obstacles, error]);
 
     const getCells: React.ReactNode[] | null = useMemo(() => {
         if (!updateMatrix || !matrixIcons) {
@@ -147,18 +151,15 @@ const CityGrid_B: React.FC<GridProps_B> = ({
         return <Spinner />;
     }
     return (
-        <div>
-            {error && <p>{error}</p>}
-            <Box sx={{ 
-                display: 'grid', 
-                gridTemplateColumns: `repeat(${columns}, 1fr)`, 
-                gap: 1,
-                maxWidth: '600px', // Set max width
-                margin: '0 auto'   // Center the grid
-            }}>
-                {getCells}
-            </Box>
-        </div>
+        <Box sx={{ 
+            display: 'grid', 
+            gridTemplateColumns: `repeat(${columns}, 1fr)`, 
+            gap: 1,
+            maxWidth: '600px', // Set max width
+            margin: '0 auto'   // Center the grid
+        }}>
+            {getCells}
+        </Box>
     );
 };
 
