@@ -10,7 +10,8 @@ import { CityGrid_A, CityGrid_B, TestCityGrid } from './components/CityGrid';
 import LevelCompleteDialog from './components/LevelCompleteDialog';
 import { DemoControls } from './components/DemoControls';
 import FeatureDemo from './components/FeatureDemo';
-import { GameState } from './shared/types/level';
+import { LevelConfig } from '../shared/types/level';
+import { getLevelsByPack } from '../shared/data/levels';
 
 export const App = () => {
   const {
@@ -34,6 +35,12 @@ export const App = () => {
   const [showLevelSelector, setShowLevelSelector] = useState(true);
   const [showCompletionDialog, setShowCompletionDialog] = useState(false);
   const [showFeatureDemo, setShowFeatureDemo] = useState(false);
+
+  // Moved LevelSelector state vars to App to make Next Level button work properly.
+  const [selectedLevel, setSelectedLevel] = useState<LevelConfig | undefined>(undefined);
+  const [internalSelectedPack, setInternalSelectedPack] = useState<string>('tutorial');
+  // New level state var for Next Level button
+  const [selectedLevelIndex, setSelectedLevelIndex] = useState<number>(0);
 
   // Show completion dialog when level is completed or failed
   useEffect(() => {
@@ -64,9 +71,17 @@ export const App = () => {
     resumeLevel();
   };
 
+  /**
+   * Increment level index and load from the pack.
+   * 
+   * Doesn't check if level index is out of bounds. That is handled by completion dialog, which disables Next Level button if index === pack.length - 1.
+   */
   const handleNextLevel = () => {
-    // For now, just return to menu. In a real implementation, you'd load the next level
-    handleReturnToMenu();
+    setSelectedLevelIndex(prev => prev + 1);
+    setSelectedLevel(getLevelsByPack(internalSelectedPack)[selectedLevelIndex]);
+    if (selectedLevel) {
+      handleLevelSelect(selectedLevel.id);
+    }
   };
 
   const handleRetryLevel = () => {
@@ -129,6 +144,13 @@ export const App = () => {
           // keep the UI on the last selected pack if available
           selectedPack={selectedPack}
           setSelectedPack={setSelectedPack}
+          // State vars moved to App for Next Level button
+          selectedLevel={selectedLevel}
+          setSelectedLevel={setSelectedLevel}
+          internalSelectedPack={internalSelectedPack}
+          setInternalSelectedPack={setInternalSelectedPack}
+          // New state var for Next Level button. Only need to pass setter, no need to pass getter.
+          setSelectedLevelIndex={setSelectedLevelIndex}
         />
       </Box>
     );
@@ -201,6 +223,7 @@ export const App = () => {
           open={showCompletionDialog}
           gameProgress={gameProgress}
           level={currentLevel}
+          isNextLevelDisabled={() => selectedLevelIndex === getLevelsByPack(internalSelectedPack).length - 1}
           onNextLevel={handleNextLevel}
           onRetry={handleRetryLevel}
           onReturnToMenu={handleReturnToMenu}

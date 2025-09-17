@@ -27,6 +27,7 @@ interface LevelCompleteDialogProps {
   open: boolean;
   gameProgress: GameProgress | null;
   level: LevelConfig | null;
+  isNextLevelDisabled: () => boolean;
   onNextLevel: () => void;
   onRetry: () => void;
   onReturnToMenu: () => void;
@@ -36,6 +37,7 @@ const LevelCompleteDialog: React.FC<LevelCompleteDialogProps> = ({
   open,
   gameProgress,
   level,
+  isNextLevelDisabled,
   onNextLevel,
   onRetry,
   onReturnToMenu,
@@ -271,7 +273,8 @@ const LevelCompleteDialog: React.FC<LevelCompleteDialogProps> = ({
             variant="contained"
             fullWidth
             startIcon={<CheckCircle />}
-          >
+            disabled={isNextLevelDisabled()}
+            >
             Next Level
           </Button>
         ) : (
