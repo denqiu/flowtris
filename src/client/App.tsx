@@ -7,6 +7,7 @@ import { useLevelManager } from './hooks/useLevelManager';
 import LevelSelector from './components/LevelSelector';
 import GameHUD from './components/GameHUD';
 import { CityGrid_A, CityGrid_B, TestCityGrid } from './components/CityGrid';
+import Spinner from './components/Spinner';
 import LevelCompleteDialog from './components/LevelCompleteDialog';
 import { DemoControls } from './components/DemoControls';
 import FeatureDemo from './components/FeatureDemo';
@@ -75,9 +76,12 @@ export const App = () => {
    * Increment level index and load from the pack.
    * 
    * Doesn't check if level index is out of bounds. That is handled by completion dialog, which disables Next Level button if index === pack.length - 1.
+   * 
+   * References:
+   * @link {https://stackoverflow.com/questions/64311416/whats-the-difference-between-setcountprev-prev-1-and-setcountcount-1}
    */
   const handleNextLevel = () => {
-    setSelectedLevelIndex(prev => prev + 1);
+    setSelectedLevelIndex(selectedLevelIndex + 1);
     setSelectedLevel(getLevelsByPack(internalSelectedPack)[selectedLevelIndex]);
     if (selectedLevel) {
       handleLevelSelect(selectedLevel.id);
@@ -235,7 +239,7 @@ export const App = () => {
   // Fallback
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <Typography variant="h6">Loading...</Typography>
+      <Spinner />
     </Box>
   );
 };
