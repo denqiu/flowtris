@@ -15,7 +15,8 @@
         - `local`: Copy `dev` and replace `npm run dev:devvit` with `npm run dev:localdevvit`.
     1. Go to https://developers.reddit.com/new to create app with modified name.
     1. If successful, you will see several commands. We do not need to run `npm create devvit@latest <token>`. Ignore it.
-    1. Instead, run `npm run local` to successfully launch UI.
+    1. Instead run `npm run local` to successfully generate playtest url. Navigate to url and find game in the top post. You should see `Launch App` button.
+    1. If `Launch App` button doesn't appear, login to devvit, `devvit login`. Otherwise [503 error](https://www.reddit.com/r/lastfm/comments/fhlooe/anyone_getting_a_constant_error_503_first_byte/) appears in dev console.
 
 # References
 

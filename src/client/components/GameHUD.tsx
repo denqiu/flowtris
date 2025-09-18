@@ -141,32 +141,19 @@ const GameHUD: React.FC<GameHUDProps> = ({
             />
           </Box>
 
-          {/* Potholes Filled Progress */}
+          {/* Potholes Remaining Progress */}
           <Box sx={{ flex: 1 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                 {renderIcon('POTHOLE')}
                 <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-                  Potholes Filled
+                  Potholes Remaining
                 </Typography>
               </Box>
               <Typography variant="body2" color="text.secondary">
-                {gameProgress.potholesFilled} / {gameProgress.currentLevel ? 
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  (gameProgress.currentLevel as any).objectives?.potholesToFill || 0 : 0}
+                {gameProgress.potholeCount}
               </Typography>
             </Box>
-      <LinearProgress
-              variant="determinate"
-              value={gameProgress.currentLevel ? 
-                getProgressPercentage(
-                  gameProgress.potholesFilled,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (gameProgress.currentLevel as any).objectives?.potholesToFill || 1
-                ) : 0
-              }
-        sx={{ height: 8, borderRadius: 4, '& .MuiLinearProgress-bar': { backgroundColor: 'var(--color-pothole)' } }}
-            />
           </Box>
         </Box>
 
@@ -196,7 +183,11 @@ const GameHUD: React.FC<GameHUDProps> = ({
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               {/* Moves Left (Hints) */}
               <Typography variant="body2" color="text.secondary">
-                Moves left: {gameProgress.movesLeft === null || gameProgress.movesLeft === undefined ? '∞' : gameProgress.movesLeft}
+                Moves left: {gameProgress.movesLeft === null || gameProgress.movesLeft === undefined 
+                ? <span style={{fontSize: '1.2rem'}} >∞</span> 
+                // ? <Typography sx={{fontSize: '1.5rem'}} variant="body2" color="text.secondary">∞</Typography>
+                // ? '∞'
+                 : gameProgress.movesLeft}
               </Typography>
             </Box>
 

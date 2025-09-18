@@ -2,14 +2,11 @@ import { useState, useCallback } from 'react';
 import { IconKey, MatrixIconsRequest, MatrixIconsResponse } from '../../../shared/types/grid';
 import { SharedGridState } from '../../../shared/state/grid';
 
-const useMatrixIcons = ({ setError }: SharedGridState) => {
+const useMatrixIcons = ({ setError }: Required<SharedGridState>) => {
     const [matrixIcons, setMatrixIcons] = useState<IconKey[][] | null>(null);
     const fetchMatrixIcons = useCallback(
-        async (potholes: [number, number][] | null, request: MatrixIconsRequest) => {
+        async (request: MatrixIconsRequest) => {
             try {
-                if (potholes && request.obstacles) {
-                    request.obstacles.push({ iconKey: 'POTHOLE', points: potholes, direction: null });
-                }
                 const res = await fetch('/api/grid/icons', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },

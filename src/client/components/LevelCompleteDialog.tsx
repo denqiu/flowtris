@@ -27,6 +27,7 @@ interface LevelCompleteDialogProps {
   open: boolean;
   gameProgress: GameProgress | null;
   level: LevelConfig | null;
+  isNextLevelDisabled: () => boolean;
   onNextLevel: () => void;
   onRetry: () => void;
   onReturnToMenu: () => void;
@@ -36,6 +37,7 @@ const LevelCompleteDialog: React.FC<LevelCompleteDialogProps> = ({
   open,
   gameProgress,
   level,
+  isNextLevelDisabled,
   onNextLevel,
   onRetry,
   onReturnToMenu,
@@ -169,15 +171,15 @@ const LevelCompleteDialog: React.FC<LevelCompleteDialogProps> = ({
                   </Typography>
                 </Box>
 
-                {/* Potholes Filled */}
-                {level.objectives.potholesToFill && level.objectives.potholesToFill > 0 && (
+                {/* Potholes Remaining */}
+                {level.objectives.potholeCount && level.objectives.potholeCount > 0 && (
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <Construction fontSize="small" />
-                      <Typography>Potholes Filled</Typography>
+                      <Typography>Potholes Remaining</Typography>
                     </Box>
                     <Typography>
-                      {gameProgress.potholesFilled} / {level.objectives.potholesToFill}
+                      {gameProgress.potholeCount}
                     </Typography>
                   </Box>
                 )}
@@ -242,20 +244,14 @@ const LevelCompleteDialog: React.FC<LevelCompleteDialogProps> = ({
             </Box>
 
             {/* Potholes Progress */}
-            {level.objectives.potholesToFill && level.objectives.potholesToFill > 0 && (
+            {level.objectives.potholeCount && level.objectives.potholeCount > 0 && (
               <Box>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                  <Typography variant="body2">Potholes Filled</Typography>
+                  <Typography variant="body2">Potholes Remaining</Typography>
                   <Typography variant="body2">
-                    {gameProgress.potholesFilled} / {level.objectives.potholesToFill}
+                    {gameProgress.potholeCount}
                   </Typography>
                 </Box>
-                <LinearProgress
-                  variant="determinate"
-                  value={(gameProgress.potholesFilled / level.objectives.potholesToFill) * 100}
-                  color="secondary"
-                  sx={{ height: 8, borderRadius: 4 }}
-                />
               </Box>
             )}
           </Box>
@@ -277,7 +273,8 @@ const LevelCompleteDialog: React.FC<LevelCompleteDialogProps> = ({
             variant="contained"
             fullWidth
             startIcon={<CheckCircle />}
-          >
+            disabled={isNextLevelDisabled()}
+            >
             Next Level
           </Button>
         ) : (
