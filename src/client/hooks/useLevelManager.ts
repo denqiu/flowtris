@@ -26,6 +26,11 @@ export const useLevelManager = () => {
 
   const gameTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const [nextLevelState, setNextLevelState] = useState<{nextIndex: number; isDisabled: boolean}>({
+    nextIndex: 0,
+    isDisabled: false
+  });
+
   // Load saved data on mount
   useEffect(() => {
     const savedStats = localStorage.getItem(STORAGE_KEY);
@@ -424,7 +429,7 @@ export const useLevelManager = () => {
     gameProgress: state.gameProgress,
     totalStars: state.totalStars,
     levelStats: state.levelStats,
-  selectedPack: state.selectedPack,
+    selectedPack: state.selectedPack,
     
     // Actions
     startLevel,
@@ -434,11 +439,15 @@ export const useLevelManager = () => {
     failLevel,
     returnToMenu,
     updateProgress,
-  setSelectedPack,
+    setSelectedPack,
     
     // Getters
     getLevelStats,
     isLevelUnlocked,
+
+    // Next Level
+    nextLevelState,
+    setNextLevelState,
   };
 };
 

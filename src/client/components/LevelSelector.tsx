@@ -35,11 +35,7 @@ interface LevelSelectorProps {
   isLevelUnlocked: (levelId: string) => boolean;
   selectedPack?: string;
   setSelectedPack?: (packId: string) => void;
-  selectedLevel?: LevelConfig;
-  setSelectedLevel: (level?: LevelConfig) => void;
-  internalSelectedPack: string;
-  setInternalSelectedPack: (packId: string) => void;
-  setSelectedLevelIndex: (index: number) => void;
+  setNextLevel: (props: {nextLevelIndex?: number, packId?: string}) => void;
 }
 
 const LevelSelector: React.FC<LevelSelectorProps> = ({
@@ -49,13 +45,10 @@ const LevelSelector: React.FC<LevelSelectorProps> = ({
   selectedPack,
   isLevelUnlocked,
   setSelectedPack,
-  selectedLevel,
-  setSelectedLevel,
-  internalSelectedPack,
-  setInternalSelectedPack,
-  setSelectedLevelIndex,
+  setNextLevel,
 }) => {
-  setInternalSelectedPack(selectedPack || 'tutorial');
+  const [internalSelectedPack, setInternalSelectedPack] = useState<string>(selectedPack || 'tutorial');
+  const [selectedLevel, setSelectedLevel] = useState<LevelConfig | undefined>(undefined);
   const [levelDetailsOpen, setLevelDetailsOpen] = useState(false);
 
   const getDifficultyColor = (difficulty: Difficulty): string => {
@@ -90,10 +83,11 @@ const LevelSelector: React.FC<LevelSelectorProps> = ({
     ));
   };
 
-  const handleLevelClick = (level: LevelConfig) => {
+  const handleLevelClick = (level: LevelConfig, levelIndex: number) => {
     if (!isLevelUnlocked(level.id)) return;
     
     setSelectedLevel(level);
+    setNextLevel({nextLevelIndex: levelIndex + 1});
     setLevelDetailsOpen(true);
   };
 
@@ -150,8 +144,8 @@ const LevelSelector: React.FC<LevelSelectorProps> = ({
                 }}
                 onClick={() => {
                   setInternalSelectedPack(pack.id);
+                  setNextLevel({packId: pack.id});
                   if (setSelectedPack) setSelectedPack(pack.id);
-                  setSelectedLevelIndex(0);
                 }}
               >
                 <CardContent>
@@ -200,10 +194,7 @@ const LevelSelector: React.FC<LevelSelectorProps> = ({
                       boxShadow: 4,
                     } : {},
                   }}
-                  onClick={() => {
-                    handleLevelClick(level);
-                    setSelectedLevelIndex(levelIndex);
-                  }}
+                  onClick={() => handleLevelClick(level, levelIndex)}
                 >
                   <CardContent>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
