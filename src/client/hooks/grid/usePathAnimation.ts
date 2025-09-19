@@ -25,8 +25,8 @@ const usePathAnimation = (
     selectedPath ? 0 : null
   );
   const [vehicles, setVehicles] = useState<Record<string, VehiclePosition>>({});
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const animationRefs = useRef<Record<string, NodeJS.Timeout>>({});
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const animationRefs = useRef<Record<string, ReturnType<typeof setInterval>>>({});
 
   // Calculate direction between two points
   const getDirection = useCallback((from: [number, number], to: [number, number]): IconDirection => {

@@ -35,6 +35,7 @@ interface LevelSelectorProps {
   isLevelUnlocked: (levelId: string) => boolean;
   selectedPack?: string;
   setSelectedPack?: (packId: string) => void;
+  setNextLevel: (props: {nextLevelIndex?: number, packId?: string}) => void;
 }
 
 const LevelSelector: React.FC<LevelSelectorProps> = ({
@@ -44,9 +45,10 @@ const LevelSelector: React.FC<LevelSelectorProps> = ({
   selectedPack,
   isLevelUnlocked,
   setSelectedPack,
+  setNextLevel,
 }) => {
   const [internalSelectedPack, setInternalSelectedPack] = useState<string>(selectedPack || 'tutorial');
-  const [selectedLevel, setSelectedLevel] = useState<LevelConfig | null>(null);
+  const [selectedLevel, setSelectedLevel] = useState<LevelConfig | undefined>(undefined);
   const [levelDetailsOpen, setLevelDetailsOpen] = useState(false);
 
   const getDifficultyColor = (difficulty: Difficulty): string => {
@@ -81,10 +83,11 @@ const LevelSelector: React.FC<LevelSelectorProps> = ({
     ));
   };
 
-  const handleLevelClick = (level: LevelConfig) => {
+  const handleLevelClick = (level: LevelConfig, levelIndex: number) => {
     if (!isLevelUnlocked(level.id)) return;
     
     setSelectedLevel(level);
+    setNextLevel({nextLevelIndex: levelIndex + 1});
     setLevelDetailsOpen(true);
   };
 
@@ -141,6 +144,7 @@ const LevelSelector: React.FC<LevelSelectorProps> = ({
                 }}
                 onClick={() => {
                   setInternalSelectedPack(pack.id);
+                  setNextLevel({packId: pack.id});
                   if (setSelectedPack) setSelectedPack(pack.id);
                 }}
               >
@@ -174,7 +178,7 @@ const LevelSelector: React.FC<LevelSelectorProps> = ({
           {LEVEL_PACKS.find(pack => pack.id === internalSelectedPack)?.name} Levels
         </Typography>
         <Grid container spacing={2}>
-          {getLevelsForPack(internalSelectedPack).map((level) => {
+          {getLevelsForPack(internalSelectedPack).map((level, levelIndex) => {
             const progress = getLevelProgress(level.id);
             const unlocked = isLevelUnlocked(level.id);
             
@@ -190,7 +194,7 @@ const LevelSelector: React.FC<LevelSelectorProps> = ({
                       boxShadow: 4,
                     } : {},
                   }}
-                  onClick={() => handleLevelClick(level)}
+                  onClick={() => handleLevelClick(level, levelIndex)}
                 >
                   <CardContent>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
@@ -235,11 +239,11 @@ const LevelSelector: React.FC<LevelSelectorProps> = ({
                         <Typography variant="body2" color="text.secondary">
                           {progress.completed ? progress.stars + ' stars' : `0`}
                         </Typography>
-                      {level.objectives.potholesToFill && level.objectives.potholesToFill > 0 && (
+                      {level.objectives.potholeCount && level.objectives.potholeCount > 0 && (
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                           <Construction fontSize="small" />
                           <Typography variant="body2">
-                            {level.objectives.potholesToFill}
+                            {level.objectives.potholeCount}
                           </Typography>
                         </Box>
                       )}
@@ -302,10 +306,10 @@ const LevelSelector: React.FC<LevelSelectorProps> = ({
                     <People />
                     <Typography>Transport {selectedLevel.objectives.peopleToTransport} people</Typography>
                   </Box>
-                  {selectedLevel.objectives.potholesToFill && selectedLevel.objectives.potholesToFill > 0 && (
+                  {selectedLevel.objectives.potholeCount && selectedLevel.objectives.potholeCount > 0 && (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <Construction />
-                      <Typography>Fill {selectedLevel.objectives.potholesToFill} potholes</Typography>
+                      <Typography>Found {selectedLevel.objectives.potholeCount} potholes</Typography>
                     </Box>
                   )}
                   {selectedLevel.objectives.maxMoves && (

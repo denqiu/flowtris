@@ -208,7 +208,7 @@ export const iconCache = new MatrixCache<string[][]>(200, 1800000); // 200 entri
  * Cache management utilities
  */
 export class CacheManager {
-  private static cleanupInterval: NodeJS.Timeout | null = null;
+  private static cleanupInterval: ReturnType<typeof setInterval> | null = null;
 
   /**
    * Start automatic cache cleanup

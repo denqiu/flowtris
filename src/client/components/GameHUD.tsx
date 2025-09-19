@@ -20,11 +20,12 @@ import {
   Star,
   Score,
 } from '@mui/icons-material';
-import { GameProgress, GameState } from '../../shared/types/level';
+import { GameProgress, GameState, LevelConfig } from '../../shared/types/level';
 import { renderIcon } from '../utils/Icons';
 
 interface GameHUDProps {
   gameProgress: GameProgress;
+  currentLevel: LevelConfig;
   onPause: () => void;
   onResume: () => void;
   onReturnToMenu: () => void;
@@ -33,6 +34,7 @@ interface GameHUDProps {
 
 const GameHUD: React.FC<GameHUDProps> = ({
   gameProgress,
+  currentLevel,
   onPause,
   onResume,
   onReturnToMenu,
@@ -122,51 +124,34 @@ const GameHUD: React.FC<GameHUDProps> = ({
                   People Transported
                 </Typography>
               </Box>
+              {/* I do not know why but gameProgress.currentLevel.objectives.peopleToTransport doesn't work. */}
               <Typography variant="body2" color="text.secondary">
-                {gameProgress.peopleTransported} / {gameProgress.currentLevel ? 
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  (gameProgress.currentLevel as any).objectives?.peopleToTransport || 0 : 0}
+                {gameProgress.peopleTransported} / {currentLevel.objectives.peopleToTransport}
               </Typography>
             </Box>
       <LinearProgress
               variant="determinate"
               value={gameProgress.currentLevel ? 
-                getProgressPercentage(
-                  gameProgress.peopleTransported,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (gameProgress.currentLevel as any).objectives?.peopleToTransport || 1
-                ) : 0
+                getProgressPercentage(gameProgress.peopleTransported, currentLevel.objectives.peopleToTransport)
+                : 0
               }
         sx={{ height: 8, borderRadius: 4, '& .MuiLinearProgress-bar': { backgroundColor: 'var(--color-transport)' } }}
             />
           </Box>
 
-          {/* Potholes Filled Progress */}
+          {/* Potholes Remaining Progress */}
           <Box sx={{ flex: 1 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                 {renderIcon('POTHOLE')}
                 <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-                  Potholes Filled
+                  Potholes Remaining
                 </Typography>
               </Box>
               <Typography variant="body2" color="text.secondary">
-                {gameProgress.potholesFilled} / {gameProgress.currentLevel ? 
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  (gameProgress.currentLevel as any).objectives?.potholesToFill || 0 : 0}
+                {gameProgress.potholeCount}
               </Typography>
             </Box>
-      <LinearProgress
-              variant="determinate"
-              value={gameProgress.currentLevel ? 
-                getProgressPercentage(
-                  gameProgress.potholesFilled,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (gameProgress.currentLevel as any).objectives?.potholesToFill || 1
-                ) : 0
-              }
-        sx={{ height: 8, borderRadius: 4, '& .MuiLinearProgress-bar': { backgroundColor: 'var(--color-pothole)' } }}
-            />
           </Box>
         </Box>
 
@@ -193,13 +178,17 @@ const GameHUD: React.FC<GameHUDProps> = ({
           )}
 
           {/* Game State Indicator */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              {/* Moves Left (Hints) */}
-              <Typography variant="body2" color="text.secondary">
-                Moves left: {gameProgress.movesLeft === null || gameProgress.movesLeft === undefined ? 
-                  <span style={{ fontSize: '1.5em' }}>∞</span> : gameProgress.movesLeft}
-              </Typography>
-            </Box>
+          {/* <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}> */}
+            {/* Hide for now. Revisit later */}
+            {/* Moves Left (Hints) */}
+            {/* <Typography variant="body2" color="text.secondary">
+              Moves left: {gameProgress.movesLeft === null || gameProgress.movesLeft === undefined 
+              ? <span style={{fontSize: '1.2rem'}} >∞</span> 
+              // ? <Typography sx={{fontSize: '1.5rem'}} variant="body2" color="text.secondary">∞</Typography>
+              // ? '∞'
+                : gameProgress.movesLeft}
+            </Typography>
+          </Box> */}
 
           {/* Stars Earned */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>

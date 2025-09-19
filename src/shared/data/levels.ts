@@ -13,6 +13,8 @@ export const LEVELS: LevelConfig[] = [
     gridProps: {
       rows: 6,
       columns: 8,
+      startPoint: [0, 4],
+      endPoint: [7, 2],
       obstacles: [
         { iconKey: 'HOME', points: [[2,3], [4,3], [5,5]], direction: null }
         // { iconKey: 'POTHOLE', points: [[2, 3], [4,3], [5,5]] },
@@ -43,11 +45,10 @@ export const LEVELS: LevelConfig[] = [
     },
     objectives: {
       peopleToTransport: 3,
-      potholesToFill: null,
+      potholeCount: null,
       maxMoves: null
     },
     potholePattern: 'none',
-    potholeCount: 0,
     rewards: { points: 100, stars: 1 },
   },
   {
@@ -56,14 +57,18 @@ export const LEVELS: LevelConfig[] = [
     description: 'Fill your first pothole',
     difficulty: 'easy',
     gameMode: 'unlimited',
-    gridProps: { rows: 6, columns: 8 },
+    gridProps: {
+      rows: 6,
+      columns: 8,
+      startPoint: [0, 1],
+      endPoint: [7, 4]
+    },
     objectives: {
       peopleToTransport: 2,
-      potholesToFill: 1,
+      potholeCount: 1,
       maxMoves: null
     },
     potholePattern: 'fixed',
-    potholeCount: 1,
     sandtrixTimeLimit: 30,
     rewards: { points: 150, stars: 1 },
   },
@@ -77,11 +82,10 @@ export const LEVELS: LevelConfig[] = [
     gridProps: { rows: 6, columns: 8 },
     objectives: {
       peopleToTransport: 4,
-      potholesToFill: 1,
+      potholeCount: 1,
       maxMoves: null
     },
     potholePattern: 'random',
-    potholeCount: 2,
     sandtrixTimeLimit: 20,
     rewards: { points: 200, stars: 2 },
   },
@@ -97,11 +101,10 @@ export const LEVELS: LevelConfig[] = [
     gridProps: { rows: 8, columns: 10 },
     objectives: {
       peopleToTransport: 6,
-      potholesToFill: 3,
+      potholeCount: 3,
       maxMoves: 15,
     },
     potholePattern: 'random',
-    potholeCount: 4,
     sandtrixTimeLimit: 25,
     rewards: { points: 300, stars: 2 },
   },
@@ -129,11 +132,10 @@ export const LEVELS: LevelConfig[] = [
     },
     objectives: {
       peopleToTransport: 8,
-      potholesToFill: 5,
+      potholeCount: 5,
       maxMoves: 20,
     },
     potholePattern: 'random',
-    potholeCount: 6,
     sandtrixTimeLimit: 20,
     rewards: { points: 400, stars: 3 },
   },
@@ -149,11 +151,10 @@ export const LEVELS: LevelConfig[] = [
     gridProps: { rows: 10, columns: 12 },
     objectives: {
       peopleToTransport: 12,
-      potholesToFill: 8,
+      potholeCount: 8,
       maxMoves: 25,
     },
     potholePattern: 'random',
-    potholeCount: 10,
     sandtrixTimeLimit: 15,
     rewards: { points: 600, stars: 3 },
   },
@@ -167,11 +168,10 @@ export const LEVELS: LevelConfig[] = [
     gridProps: { rows: 12, columns: 14 },
     objectives: {
       peopleToTransport: 15,
-      potholesToFill: 12,
+      potholeCount: 12,
       maxMoves: 30,
     },
     potholePattern: 'random',
-    potholeCount: 15,
     sandtrixTimeLimit: 12,
     rewards: { points: 800, stars: 3 },
   },
@@ -186,18 +186,17 @@ export const LEVELS: LevelConfig[] = [
     gridProps: { rows: 8, columns: 10 },
     objectives: {
       peopleToTransport: 999, // High number for endless
-      potholesToFill: null,
+      potholeCount: null,
       maxMoves: null
     },
     potholePattern: 'random',
-    potholeCount: 5,
     sandtrixTimeLimit: 20,
     rewards: { points: 0, stars: 0 }, // Dynamic scoring
   },
 ];
 
 for (const level of LEVELS) {
-  level.gridProps = InitGridProps_B(level.id, level.objectives.potholesToFill || 0, level.gridProps);
+  level.gridProps = InitGridProps_B(level.id, level.gridProps);
 }
 
 // Level packs for progression
@@ -224,7 +223,7 @@ export const LEVEL_PACKS: LevelPack[] = [
     description: 'Master the Autobahn',
     levels: LEVELS.filter(level => level.difficulty === 'hard'),
     unlocked: false,
-    requiredStars: 9, // Need 9 stars from previous packs
+    requiredStars: 6, // Need 6 stars from previous packs
   },
   {
     id: 'endless',
@@ -232,7 +231,7 @@ export const LEVEL_PACKS: LevelPack[] = [
     description: 'Unlimited challenges',
     levels: LEVELS.filter(level => level.difficulty === 'endless'),
     unlocked: false,
-    requiredStars: 15, // Need 15 stars total
+    requiredStars: 9, // Need 9 stars total
   },
 ];
 

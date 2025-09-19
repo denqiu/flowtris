@@ -16,11 +16,10 @@ export interface LevelConfig {
   gridProps: GridProps_B;
   objectives: {
     peopleToTransport: number;
-    potholesToFill: number | null;
+    potholeCount: number | null;
     maxMoves: number | null;
   };
   potholePattern: 'random' | 'fixed' | 'none';
-  potholeCount: number;
   sandtrixTimeLimit?: number; // time for sandtrix mini-game
   rewards: {
     points: number;
@@ -33,7 +32,7 @@ export interface GameProgress {
   score: number;
   timeRemaining?: number;
   peopleTransported: number;
-  potholesFilled: number;
+  potholeCount: number;
   movesUsed: number;
   // Remaining moves/hints (null/undefined = unlimited)
   movesLeft?: number | null;

@@ -193,7 +193,7 @@ export class PathMovesCalculator {
 
     return {
       movesUsed: newMovesUsed,
-      potholesFilled: currentProgress.potholesFilled + potholeFillsFromPath,
+      potholeCount: currentProgress.potholeCount + potholeFillsFromPath,
       peopleTransported: currentProgress.peopleTransported + peoplePickupFromPath,
       movesLeft: currentProgress.movesLeft !== null && currentProgress.movesLeft !== undefined ? 
         Math.max(0, currentProgress.movesLeft - actualMovesUsed) : null

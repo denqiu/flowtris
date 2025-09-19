@@ -1,3 +1,4 @@
+import { showToast } from "@devvit/web/client";
 import React, { useEffect, useState, useMemo } from "react";
 import { GridProps_A, GridProps_B, MatrixRequest_A, MatrixRequest_B, MatrixIconsRequest } from "../../shared/types/grid";
 import { Box, Paper } from "@mui/material";
@@ -5,6 +6,7 @@ import { renderIcon } from "../utils/Icons";
 import Spinner from "./Spinner";
 import { useMatrixPaths_A, useMatrixPaths_B } from "../hooks/grid/useMatrixPaths";
 import useMatrixIcons from "../hooks/grid/useMatrixIcons";
+import { useMatrix_B } from "../hooks/grid/useMatrix";
 
 /**
  * Get rotation angle for direction
@@ -43,7 +45,7 @@ const CityGrid_A: React.FC<GridProps_A> = ({
     const { matrixIcons, fetchMatrixIcons } = useMatrixIcons({ setError });
     useEffect(() => {
         void fetchMatrixPaths({matrix, paths} as MatrixRequest_A);
-        void fetchMatrixIcons(null, { rows, columns, obstacles, } as MatrixIconsRequest);
+        void fetchMatrixIcons({ rows, columns, obstacles, } as MatrixIconsRequest);
     }, [fetchMatrixPaths, matrix, paths, fetchMatrixIcons, rows, columns, obstacles]);
 
     const getCells: React.ReactNode[] | null = useMemo(() => {
@@ -101,23 +103,29 @@ const CityGrid_A: React.FC<GridProps_A> = ({
  * Assume grid props to be already initialized.
  */
 const CityGrid_B: React.FC<GridProps_B> = ({ 
-    rows, columns, matrix, obstacles, potholeCount, // Required
-    gameState, // Required
-    startPoint, endPoint, isAutobahn // Optional
+    rows, columns, matrix, obstacles, startPoint, endPoint, // Required
+    gameProgress, // Required
+    isAutobahn // Optional
 }) => {
+    const { potholeCount } = gameProgress || {};
     const [error, setError] = useState<string | null>(null);
-    const { updateMatrix, selectedPath, potholes, fetchMatrixPaths } = useMatrixPaths_B({ setError });
-    const { matrixIcons, fetchMatrixIcons } = useMatrixIcons({ setError });
+    const { updateMatrix, selectedPath, matrixIcons, fetchMatrix } = useMatrix_B({ setError });
+    // const { updateMatrix, selectedPath, potholesForIcons, fetchMatrixPaths } = useMatrixPaths_B({ setError });
+    // const { matrixIcons, fetchMatrixIcons } = useMatrixIcons({ setError });
 
     // fetch path animation here?
 
+    // useEffect(() => {
+    //     void fetchMatrixPaths({matrix, potholeCount: gameProgress?.potholeCount, startPoint, endPoint} as MatrixRequest_B);
+    //     void fetchMatrixIcons({ rows, columns, obstacles, potholesForIcons } as MatrixIconsRequest);
+    // }, [fetchMatrixPaths, matrix, startPoint, endPoint, gameProgress, matrixIcons, fetchMatrixIcons, rows, columns, obstacles, potholesForIcons, selectedPath]);
+
     useEffect(() => {
-        void fetchMatrixPaths({matrix, potholeCount, startPoint, endPoint} as MatrixRequest_B);
-        if (selectedPath) {
-            // This means we can pass in potholes from the selected path.
-            void fetchMatrixIcons(potholes, { rows, columns, obstacles } as MatrixIconsRequest);
+        if (error) {
+            showToast({ text: error, appearance: 'neutral' });
         }
-    }, [fetchMatrixPaths, matrix, potholeCount, startPoint, endPoint, fetchMatrixIcons, rows, columns, obstacles, potholes, selectedPath]);
+        void fetchMatrix({matrix, potholeCount, startPoint, endPoint, rows, columns, obstacles} as MatrixRequest_B & MatrixIconsRequest)
+    }, [fetchMatrix, matrix, startPoint, endPoint, potholeCount, rows, columns, obstacles, error]);
 
     const getCells: React.ReactNode[] | null = useMemo(() => {
         if (!updateMatrix || !matrixIcons) {
@@ -154,18 +162,15 @@ const CityGrid_B: React.FC<GridProps_B> = ({
         return <Spinner />;
     }
     return (
-        <div>
-            {error && <p>{error}</p>}
-            <Box sx={{ 
-                display: 'grid', 
-                gridTemplateColumns: `repeat(${columns}, 1fr)`, 
-                gap: 0, // Set spacing to 0 as requested
-                maxWidth: '600px', // Set max width
-                margin: '0 auto'   // Center the grid
-            }}>
-                {getCells}
-            </Box>
-        </div>
+        <Box sx={{ 
+            display: 'grid', 
+            gridTemplateColumns: `repeat(${columns}, 1fr)`, 
+            gap: 0, // Set spacing to 0 as requested
+            maxWidth: '600px', // Set max width
+            margin: '0 auto'   // Center the grid
+        }}>
+            {getCells}
+        </Box>
     );
 };
 

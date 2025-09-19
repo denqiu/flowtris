@@ -5,11 +5,13 @@ import { Box, Container, Typography, Button } from '@mui/material';
 import { useLevelManager } from './hooks/useLevelManager';
 import LevelSelector from './components/LevelSelector';
 import GameHUD from './components/GameHUD';
-import { CityGrid_B } from './components/CityGrid';
+import { CityGrid_A, CityGrid_B, TestCityGrid } from './components/CityGrid';
+import Spinner from './components/Spinner';
 import LevelCompleteDialog from './components/LevelCompleteDialog';
 import { DemoControls } from './components/DemoControls';
 import FeatureDemo from './components/FeatureDemo';
-
+import { LevelConfig } from '../shared/types/level';
+import { getLevelsByPack } from '../shared/data/levels';
 
 export const App = () => {
   const {
@@ -26,8 +28,10 @@ export const App = () => {
     updateProgress,
     getLevelStats,
     isLevelUnlocked,
-  selectedPack,
-  setSelectedPack,
+    selectedPack,
+    setSelectedPack,
+    nextLevelState,
+    setNextLevelState,
   } = useLevelManager();
 
   const [showLevelSelector, setShowLevelSelector] = useState(true);
@@ -46,6 +50,7 @@ export const App = () => {
     if (success) {
       setShowLevelSelector(false);
       setShowCompletionDialog(false);
+      setNextLevel({ nextLevelIndex: nextLevelState.nextIndex + 1 });
     }
   };
 
@@ -63,9 +68,34 @@ export const App = () => {
     resumeLevel();
   };
 
+  /**
+   * Increment level index and load from the pack.
+   * 
+   * Doesn't check if level index is out of bounds. That is handled by completion dialog, which disables Next Level button if index === pack.length - 1.
+   * 
+   * References:
+   * @link {https://stackoverflow.com/questions/64311416/whats-the-difference-between-setcountprev-prev-1-and-setcountcount-1}
+   */
+  const setNextLevel = (props: {nextLevelIndex?: number, packId?: string}) => {
+    setNextLevelState(prev => {
+      const nextIndex = props.packId ? 0 : (props.nextLevelIndex || prev.nextIndex);
+      return {
+        ...prev,
+        nextIndex: nextIndex,
+        isDisabled: nextIndex === getLevelsByPack(props.packId || selectedPack || 'tutorial').length
+      };
+    });
+    // console.log(props.packId || selectedPack || 'tutorial', nextLevelState, getLevelsByPack(props.packId || selectedPack || 'tutorial').length)
+  };
+
   const handleNextLevel = () => {
-    // For now, just return to menu. In a real implementation, you'd load the next level
-    handleReturnToMenu();
+    if (nextLevelState.isDisabled) {
+      return;
+    }
+    const nextLevel = getLevelsByPack(selectedPack || 'tutorial')[nextLevelState.nextIndex];
+    if (nextLevel) {
+      handleLevelSelect(nextLevel.id);
+    }
   };
 
   const handleRetryLevel = () => {
@@ -78,9 +108,9 @@ export const App = () => {
   // Mock game actions for demonstration
   const handleMockComplete = () => {
     if (currentLevel && gameProgress) {
-      const mockScore = Math.floor(Math.random() * 1000) + 500;
-      const mockPeople = currentLevel.objectives.peopleToTransport;
-      const mockPotholes = currentLevel.objectives.potholesToFill || 0;
+      const mockScore = gameProgress.score;
+      const mockPeople = gameProgress.peopleTransported;
+      const mockPotholes = gameProgress.potholeCount;
       
       completeLevel(mockScore, mockPeople, mockPotholes);
     }
@@ -111,15 +141,15 @@ export const App = () => {
   if (showLevelSelector) {
     return (
       <Box sx={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
-        <Box sx={{ position: 'fixed', top: 16, right: 16, zIndex: 1000 }}>
+        {/* <Box sx={{ position: 'fixed', top: 16, right: 16, zIndex: 1000 }}>
           <Button 
             variant="outlined" 
-            onClick={() => setShowFeatureDemo(true)}
+            onClick={() => setShowFeatureDemo(false)}
             sx={{ mr: 1 }}
           >
             View Feature Demo
           </Button>
-        </Box>
+        </Box> */}
         <LevelSelector
           onLevelSelect={handleLevelSelect}
           levelStats={levelStats}
@@ -128,6 +158,7 @@ export const App = () => {
           // keep the UI on the last selected pack if available
           selectedPack={selectedPack}
           setSelectedPack={setSelectedPack}
+          setNextLevel={setNextLevel}
         />
       </Box>
     );
@@ -135,11 +166,11 @@ export const App = () => {
 
   // Show game interface
   if (currentLevel && gameProgress) {
-    currentLevel.gridProps.gameState = gameProgress.gameState;
   return (
       <Box sx={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
         <GameHUD
           gameProgress={gameProgress}
+          currentLevel={currentLevel}
           onPause={handlePause}
           onResume={handleResume}
           onReturnToMenu={handleReturnToMenu}
@@ -160,19 +191,27 @@ export const App = () => {
 
             {/* Game Grid */}
             <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
-              <CityGrid_B {...currentLevel.gridProps} />
+              <CityGrid_B 
+                gameProgress={gameProgress}
+                {...currentLevel.gridProps} 
+              />
               {/* <TestCityGrid /> */}
             </Box>
 
             {/* Demo Controls */}
             <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
               <DemoControls
-                onTransportPerson={() => updateProgress({ 
+                onTransportBus={() => updateProgress({ 
                   peopleTransported: gameProgress.peopleTransported + 1,
                   score: gameProgress.score + 100 
                 })}
+                onTransportCar={() => updateProgress({ 
+                  peopleTransported: gameProgress.peopleTransported + 1,
+                  score: gameProgress.score + 150 
+                })}
+                
                 onFillPothole={() => updateProgress({ 
-                  potholesFilled: gameProgress.potholesFilled + 1,
+                  potholeCount: gameProgress.potholeCount - 1,
                   score: gameProgress.score + 50 
                 })}
                 onUseMove={() => {
@@ -187,7 +226,7 @@ export const App = () => {
                 onComplete={handleMockComplete}
                 onFail={handleMockFail}
                 disableTransport={currentLevel ? gameProgress.peopleTransported >= currentLevel.objectives.peopleToTransport : false}
-                disablePothole={currentLevel ? (currentLevel.objectives.potholesToFill ? gameProgress.potholesFilled >= currentLevel.objectives.potholesToFill : false) : false}
+                disablePothole={currentLevel ? gameProgress.potholeCount === 0 : false}
               />
             </Box>
 
@@ -200,6 +239,7 @@ export const App = () => {
           open={showCompletionDialog}
           gameProgress={gameProgress}
           level={currentLevel}
+          isNextLevelDisabled={nextLevelState.isDisabled}
           onNextLevel={handleNextLevel}
           onRetry={handleRetryLevel}
           onReturnToMenu={handleReturnToMenu}
@@ -209,9 +249,5 @@ export const App = () => {
   }
 
   // Fallback
-  return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <Typography variant="h6">Loading...</Typography>
-    </Box>
-  );
+  return <Spinner />;
 };
