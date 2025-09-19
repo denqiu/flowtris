@@ -20,11 +20,12 @@ import {
   Star,
   Score,
 } from '@mui/icons-material';
-import { GameProgress, GameState } from '../../shared/types/level';
+import { GameProgress, GameState, LevelConfig } from '../../shared/types/level';
 import { renderIcon } from '../utils/Icons';
 
 interface GameHUDProps {
   gameProgress: GameProgress;
+  currentLevel: LevelConfig;
   onPause: () => void;
   onResume: () => void;
   onReturnToMenu: () => void;
@@ -33,6 +34,7 @@ interface GameHUDProps {
 
 const GameHUD: React.FC<GameHUDProps> = ({
   gameProgress,
+  currentLevel,
   onPause,
   onResume,
   onReturnToMenu,
@@ -122,20 +124,16 @@ const GameHUD: React.FC<GameHUDProps> = ({
                   People Transported
                 </Typography>
               </Box>
+              {/* I do not know why but gameProgress.currentLevel.objectives.peopleToTransport doesn't work. */}
               <Typography variant="body2" color="text.secondary">
-                {gameProgress.peopleTransported} / {gameProgress.currentLevel ? 
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  (gameProgress.currentLevel as any).objectives?.peopleToTransport || 0 : 0}
+                {gameProgress.peopleTransported} / {currentLevel.objectives.peopleToTransport}
               </Typography>
             </Box>
       <LinearProgress
               variant="determinate"
               value={gameProgress.currentLevel ? 
-                getProgressPercentage(
-                  gameProgress.peopleTransported,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (gameProgress.currentLevel as any).objectives?.peopleToTransport || 1
-                ) : 0
+                getProgressPercentage(gameProgress.peopleTransported, currentLevel.objectives.peopleToTransport)
+                : 0
               }
         sx={{ height: 8, borderRadius: 4, '& .MuiLinearProgress-bar': { backgroundColor: 'var(--color-transport)' } }}
             />

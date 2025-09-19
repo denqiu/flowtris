@@ -109,9 +109,9 @@ export const App = () => {
   // Mock game actions for demonstration
   const handleMockComplete = () => {
     if (currentLevel && gameProgress) {
-      const mockScore = Math.floor(Math.random() * 1000) + 500;
-      const mockPeople = currentLevel.objectives.peopleToTransport;
-      const mockPotholes = currentLevel.objectives.potholeCount || 0;
+      const mockScore = gameProgress.score;
+      const mockPeople = gameProgress.peopleTransported;
+      const mockPotholes = gameProgress.potholeCount;
       
       completeLevel(mockScore, mockPeople, mockPotholes);
     }
@@ -141,16 +141,16 @@ export const App = () => {
   // Show level selector
   if (showLevelSelector) {
     return (
-      <Box sx={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
-        <Box sx={{ position: 'fixed', top: 16, right: 16, zIndex: 1000 }}>
-          <Button 
-            variant="outlined" 
-            onClick={() => setShowFeatureDemo(true)}
-            sx={{ mr: 1 }}
-          >
-            View Feature Demo
-          </Button>
-        </Box>
+      // <Box sx={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
+      //   <Box sx={{ position: 'fixed', top: 16, right: 16, zIndex: 1000 }}>
+      //     <Button 
+      //       variant="outlined" 
+      //       onClick={() => setShowFeatureDemo(false)}
+      //       sx={{ mr: 1 }}
+      //     >
+      //       View Feature Demo
+      //     </Button>
+      //   </Box>
         <LevelSelector
           onLevelSelect={handleLevelSelect}
           levelStats={levelStats}
@@ -167,11 +167,11 @@ export const App = () => {
 
   // Show game interface
   if (currentLevel && gameProgress) {
-    currentLevel.gridProps.gameProgress = gameProgress;
   return (
       <Box sx={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
         <GameHUD
           gameProgress={gameProgress}
+          currentLevel={currentLevel}
           onPause={handlePause}
           onResume={handleResume}
           onReturnToMenu={handleReturnToMenu}
@@ -192,7 +192,10 @@ export const App = () => {
 
             {/* Game Grid */}
             <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
-              <CityGrid_B {...currentLevel.gridProps} />
+              <CityGrid_B 
+                gameProgress={gameProgress}
+                {...currentLevel.gridProps} 
+              />
               {/* <TestCityGrid /> */}
             </Box>
 
