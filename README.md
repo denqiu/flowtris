@@ -1,10 +1,26 @@
-# Dev Notes
+# Game
+
+### Objective
+
+You must transport people through the city to the destination and fill in or avoid potholes along the way.
+
+### How to Play
+
+- Click a transportation vehicle to send people to the destination.
+- [Optional] Select a pothole to fill it in.
+
+---
+
+# Development
+
+### Dev Notes
 
 - Node version: 22.19.0
 - [PRD (Project Requirements Document)](PRD.md)
 - Tasks: See [Issues](https://github.com/denqiu/flowtris/issues)
+- [Devpost](https://devpost.com/software/hearing-mapped-to-infrastructure-analogy)
 
-# FAQ
+### FAQ
 
 - How to Setup App for Multiple Developers:
     1. Create a copy of `devvit.json`, i.e., `devvit.local.json`.
@@ -18,13 +34,15 @@
     1. Instead run `npm run local` to successfully generate playtest url. Navigate to url and find game in the top post. You should see `Launch App` button.
     1. If `Launch App` button doesn't appear, login to devvit, `devvit login`. Otherwise [503 error](https://www.reddit.com/r/lastfm/comments/fhlooe/anyone_getting_a_constant_error_503_first_byte/) appears in dev console.
 
-# References
+### References
 
 - [React.FC](https://dev.to/elhamnajeebullah/react-typescript-what-is-reactfc-and-why-should-i-use-it-4029)
 
 ---
 
-# Devvit React Starter
+# Starter Kit
+
+### Devvit React Starter
 
 A starter to build web applications on Reddit's developer platform
 
@@ -35,7 +53,7 @@ A starter to build web applications on Reddit's developer platform
 - [Tailwind](https://tailwindcss.com/): For styles
 - [Typescript](https://www.typescriptlang.org/): For type safety
 
-# Getting Started
+### Getting Started
 
 > Make sure you have Node 22 downloaded on your machine before running!
 
@@ -43,7 +61,7 @@ A starter to build web applications on Reddit's developer platform
 2. Go through the installation wizard. You will need to create a Reddit account and connect it to Reddit developers
 3. Copy the command on the success page into your terminal
 
-# Commands
+### Commands
 
 - `npm run dev`: Starts a development server where you can develop your application live on Reddit.
 - `npm run build`: Builds your client and server projects
@@ -52,6 +70,6 @@ A starter to build web applications on Reddit's developer platform
 - `npm run login`: Logs your CLI into Reddit
 - `npm run check`: Type checks, lints, and prettifies your app
 
-# Cursor Integration
+### Cursor Integration
 
 This template comes with a pre-configured cursor environment. To get started, [download cursor](https://www.cursor.com/downloads) and enable the `devvit-mcp` when prompted.

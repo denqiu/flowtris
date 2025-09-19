@@ -1,10 +1,11 @@
 import React from 'react';
-import { Box, Button, Typography, Paper } from '@mui/material';
+import { Box, Button, ButtonGroup, Typography, Paper } from '@mui/material';
 import { People, Construction, Directions } from '@mui/icons-material';
 import { renderIcon } from '../utils/Icons';
 
 interface DemoControlsProps {
-  onTransportPerson: () => void;
+  onTransportBus: () => void;
+  onTransportCar: () => void;
   onFillPothole: () => void;
   onUseMove: () => void;
   onComplete: () => void;
@@ -14,7 +15,8 @@ interface DemoControlsProps {
 }
 
 export const DemoControls: React.FC<DemoControlsProps> = ({
-  onTransportPerson,
+  onTransportBus,
+  onTransportCar,
   onFillPothole,
   onUseMove,
   onComplete,
@@ -38,39 +40,35 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         Use these buttons to simulate game actions and test the level system
       </Typography>
-      
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+            
+      <ButtonGroup sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
         <Button
           variant="contained"
-          startIcon={<People />}
-          onClick={onTransportPerson}
+          startIcon={renderIcon('CAR', 'down')}
+          onClick={onTransportBus}
           size="small"
           sx={{ backgroundColor: 'var(--color-transport)', color: '#fff' }}
           disabled={disableTransport}
         >
-          Transport Person
+          Bus Transport
         </Button>
 
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Transport People
-          </Typography>
-          <Button
-            variant="contained"
-            startIcon={renderIcon('CAR', 'down')}
-            onClick={onTransportPerson} // TODO: Trigger path animation. Button can be clicked multiple times and multiple points can light up at different times and progress at different speeds.
-            size="small"
-            sx={{ backgroundColor: 'var(--color-transport)', color: '#fff' }}
-            disabled={disableTransport}
-          >
-            Car Transport
-          </Button>
-          // Add bus transport when car works.
-        </Box>
-        
         <Button
           variant="contained"
-          startIcon={<Construction />}
+          startIcon={renderIcon('CAR', 'down')}
+          onClick={onTransportCar} // TODO: Trigger path animation. Button can be clicked multiple times and multiple points can light up at different times and progress at different speeds.
+          size="small"
+          sx={{ backgroundColor: 'var(--color-transport)', color: '#fff' }}
+          disabled={disableTransport}
+        >
+          Car Transport
+        </Button>
+      </ButtonGroup>
+
+      <ButtonGroup sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+        <Button
+          variant="contained"
+          startIcon={renderIcon('POTHOLE')}
           onClick={onFillPothole}
           size="small"
           sx={{ backgroundColor: 'var(--color-pothole)', color: '#fff' }}
@@ -78,7 +76,10 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
         >
           Fill Pothole
         </Button>
-        
+      </ButtonGroup>
+
+      {/* Hide for now. Revisit later */}
+      {/* <ButtonGroup sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
         <Button
           variant="contained"
           startIcon={<Directions />}
@@ -88,9 +89,9 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
         >
           Hint
         </Button>
-      </Box>
+      </ButtonGroup> */}
       
-      <Box sx={{ display: 'flex', gap: 1 }}>
+      <ButtonGroup sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
         <Button
           variant="outlined"
           onClick={onComplete}
@@ -108,7 +109,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
         >
           Fail Level
         </Button>
-      </Box>
+      </ButtonGroup>
     </Paper>
   );
 };

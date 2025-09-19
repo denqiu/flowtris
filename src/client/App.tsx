@@ -29,19 +29,15 @@ export const App = () => {
     updateProgress,
     getLevelStats,
     isLevelUnlocked,
-  selectedPack,
-  setSelectedPack,
+    selectedPack,
+    setSelectedPack,
+    nextLevelState,
+    setNextLevelState,
   } = useLevelManager();
 
   const [showLevelSelector, setShowLevelSelector] = useState(true);
   const [showCompletionDialog, setShowCompletionDialog] = useState(false);
   const [showFeatureDemo, setShowFeatureDemo] = useState(false);
-
-  // Moved LevelSelector state vars to App to make Next Level button work properly.
-  const [selectedLevel, setSelectedLevel] = useState<LevelConfig | undefined>(undefined);
-  const [internalSelectedPack, setInternalSelectedPack] = useState<string>('tutorial');
-  // New level state var for Next Level button
-  const [selectedLevelIndex, setSelectedLevelIndex] = useState<number>(0);
 
   // Show completion dialog when level is completed or failed
   useEffect(() => {
@@ -55,6 +51,7 @@ export const App = () => {
     if (success) {
       setShowLevelSelector(false);
       setShowCompletionDialog(false);
+      setNextLevel({ nextLevelIndex: nextLevelState.nextIndex + 1 });
     }
   };
 
@@ -80,11 +77,25 @@ export const App = () => {
    * References:
    * @link {https://stackoverflow.com/questions/64311416/whats-the-difference-between-setcountprev-prev-1-and-setcountcount-1}
    */
+  const setNextLevel = (props: {nextLevelIndex?: number, packId?: string}) => {
+    setNextLevelState(prev => {
+      const nextIndex = props.packId ? 0 : (props.nextLevelIndex || prev.nextIndex);
+      return {
+        ...prev,
+        nextIndex: nextIndex,
+        isDisabled: nextIndex === getLevelsByPack(props.packId || selectedPack || 'tutorial').length
+      };
+    });
+    // console.log(props.packId || selectedPack || 'tutorial', nextLevelState, getLevelsByPack(props.packId || selectedPack || 'tutorial').length)
+  };
+
   const handleNextLevel = () => {
-    setSelectedLevelIndex(selectedLevelIndex + 1);
-    setSelectedLevel(getLevelsByPack(internalSelectedPack)[selectedLevelIndex]);
-    if (selectedLevel) {
-      handleLevelSelect(selectedLevel.id);
+    if (nextLevelState.isDisabled) {
+      return;
+    }
+    const nextLevel = getLevelsByPack(selectedPack || 'tutorial')[nextLevelState.nextIndex];
+    if (nextLevel) {
+      handleLevelSelect(nextLevel.id);
     }
   };
 
@@ -98,9 +109,9 @@ export const App = () => {
   // Mock game actions for demonstration
   const handleMockComplete = () => {
     if (currentLevel && gameProgress) {
-      const mockScore = Math.floor(Math.random() * 1000) + 500;
-      const mockPeople = currentLevel.objectives.peopleToTransport;
-      const mockPotholes = currentLevel.objectives.potholeCount || 0;
+      const mockScore = gameProgress.score;
+      const mockPeople = gameProgress.peopleTransported;
+      const mockPotholes = gameProgress.potholeCount;
       
       completeLevel(mockScore, mockPeople, mockPotholes);
     }
@@ -131,15 +142,15 @@ export const App = () => {
   if (showLevelSelector) {
     return (
       <Box sx={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
-        <Box sx={{ position: 'fixed', top: 16, right: 16, zIndex: 1000 }}>
+        {/* <Box sx={{ position: 'fixed', top: 16, right: 16, zIndex: 1000 }}>
           <Button 
             variant="outlined" 
-            onClick={() => setShowFeatureDemo(true)}
+            onClick={() => setShowFeatureDemo(false)}
             sx={{ mr: 1 }}
           >
             View Feature Demo
           </Button>
-        </Box>
+        </Box> */}
         <LevelSelector
           onLevelSelect={handleLevelSelect}
           levelStats={levelStats}
@@ -148,13 +159,7 @@ export const App = () => {
           // keep the UI on the last selected pack if available
           selectedPack={selectedPack}
           setSelectedPack={setSelectedPack}
-          // State vars moved to App for Next Level button
-          selectedLevel={selectedLevel}
-          setSelectedLevel={setSelectedLevel}
-          internalSelectedPack={internalSelectedPack}
-          setInternalSelectedPack={setInternalSelectedPack}
-          // New state var for Next Level button. Only need to pass setter, no need to pass getter.
-          setSelectedLevelIndex={setSelectedLevelIndex}
+          setNextLevel={setNextLevel}
         />
       </Box>
     );
@@ -162,11 +167,11 @@ export const App = () => {
 
   // Show game interface
   if (currentLevel && gameProgress) {
-    currentLevel.gridProps.gameProgress = gameProgress;
   return (
       <Box sx={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
         <GameHUD
           gameProgress={gameProgress}
+          currentLevel={currentLevel}
           onPause={handlePause}
           onResume={handleResume}
           onReturnToMenu={handleReturnToMenu}
@@ -187,17 +192,25 @@ export const App = () => {
 
             {/* Game Grid */}
             <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
-              <CityGrid_B {...currentLevel.gridProps} />
+              <CityGrid_B 
+                gameProgress={gameProgress}
+                {...currentLevel.gridProps} 
+              />
               {/* <TestCityGrid /> */}
             </Box>
 
             {/* Demo Controls */}
             <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
               <DemoControls
-                onTransportPerson={() => updateProgress({ 
+                onTransportBus={() => updateProgress({ 
                   peopleTransported: gameProgress.peopleTransported + 1,
                   score: gameProgress.score + 100 
                 })}
+                onTransportCar={() => updateProgress({ 
+                  peopleTransported: gameProgress.peopleTransported + 1,
+                  score: gameProgress.score + 150 
+                })}
+                
                 onFillPothole={() => updateProgress({ 
                   potholeCount: gameProgress.potholeCount - 1,
                   score: gameProgress.score + 50 
@@ -227,7 +240,7 @@ export const App = () => {
           open={showCompletionDialog}
           gameProgress={gameProgress}
           level={currentLevel}
-          isNextLevelDisabled={() => selectedLevelIndex === getLevelsByPack(internalSelectedPack).length - 1}
+          isNextLevelDisabled={nextLevelState.isDisabled}
           onNextLevel={handleNextLevel}
           onRetry={handleRetryLevel}
           onReturnToMenu={handleReturnToMenu}

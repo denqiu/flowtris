@@ -206,7 +206,7 @@ export const LEVEL_PACKS: LevelPack[] = [
     description: 'Master the Autobahn',
     levels: LEVELS.filter(level => level.difficulty === 'hard'),
     unlocked: false,
-    requiredStars: 9, // Need 9 stars from previous packs
+    requiredStars: 6, // Need 6 stars from previous packs
   },
   {
     id: 'endless',
@@ -214,7 +214,7 @@ export const LEVEL_PACKS: LevelPack[] = [
     description: 'Unlimited challenges',
     levels: LEVELS.filter(level => level.difficulty === 'endless'),
     unlocked: false,
-    requiredStars: 15, // Need 15 stars total
+    requiredStars: 9, // Need 9 stars total
   },
 ];
 
