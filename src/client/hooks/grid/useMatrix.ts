@@ -1,11 +1,12 @@
 import { useState, useCallback } from 'react';
-import { MatrixResponse, MatrixRequest_B, MatrixIconsRequest, IconKey } from '../../../shared/types/grid';
+import { MatrixResponse, MatrixRequest_B, MatrixIconsRequest, IconKey, IconDirection } from '../../../shared/types/grid';
 import { SharedGridState } from "../../../shared/state/grid";
 
 const useMatrix_B = ({ setError }: SharedGridState) => {
     const [updateMatrix, setUpdateMatrix] = useState<number[][] | null>([]);
     const [selectedPath, setSelectedPath] = useState<[number, number][] | null>(null);
     const [matrixIcons, setMatrixIcons] = useState<IconKey[][] | null>(null);
+    const [matrixDirections, setMatrixDirections] = useState<IconDirection[][] | null>(null);
     const fetchMatrix = useCallback(
         async (request: Partial<MatrixRequest_B> & Partial<MatrixIconsRequest>) => {
             const { matrix, startPoint, endPoint } = request;
@@ -14,6 +15,7 @@ const useMatrix_B = ({ setError }: SharedGridState) => {
                     setUpdateMatrix(matrix);
                     setSelectedPath(null);
                     setMatrixIcons(null);
+                    setMatrixDirections(null);
                     if (startPoint && endPoint) {
                         const res = await fetch('/api/grid/B', {
                             method: 'POST',
@@ -24,12 +26,14 @@ const useMatrix_B = ({ setError }: SharedGridState) => {
                         setUpdateMatrix(data.matrix);
                         setSelectedPath(data.selectedPath);
                         setMatrixIcons(data.matrixIcons);
+                        setMatrixDirections(data.matrixDirections);
                     }
                     setError(null);
                 } else {
                     setUpdateMatrix(null);
                     setSelectedPath(null);
                     setMatrixIcons(null);
+                    setMatrixDirections(null);
                     setError("Error: Matrix is required.");
                 }
             } catch (err) {
@@ -37,12 +41,13 @@ const useMatrix_B = ({ setError }: SharedGridState) => {
                 setUpdateMatrix(null);
                 setSelectedPath(null);
                 setMatrixIcons(null);
+                setMatrixDirections(null);
                 setError("Error: Grid failed to load.");
             }
         }
     , [setError]);
     
-    return { updateMatrix, selectedPath, matrixIcons, fetchMatrix } as const;
+    return { updateMatrix, selectedPath, matrixIcons, matrixDirections, fetchMatrix } as const;
 };
 
 export { useMatrix_B };

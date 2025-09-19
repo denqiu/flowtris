@@ -35,6 +35,8 @@ You must transport people through the city to the destination and fill in or avo
     1. Instead run `npm run local` to successfully generate playtest url. Navigate to url and find game in the top post. You should see `Launch App` button.
     1. If `Launch App` button doesn't appear, login to devvit, `devvit login`. Otherwise [503 error](https://www.reddit.com/r/lastfm/comments/fhlooe/anyone_getting_a_constant_error_503_first_byte/) appears in dev console.
 
+    NOTICE: Check if testing subreddit link must be public for teammate's version of app to get posted on my subreddit. Test that if they have created flowtris-ag, that `npm run dev` should run if dev.subreddit is configured to `flowtris_ag_dev`.
+
 ### References
 
 - [React.FC](https://dev.to/elhamnajeebullah/react-typescript-what-is-reactfc-and-why-should-i-use-it-4029)

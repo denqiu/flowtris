@@ -109,7 +109,7 @@ const CityGrid_B: React.FC<GridProps_B> = ({
 }) => {
     const { potholeCount } = gameProgress || {};
     const [error, setError] = useState<string | null>(null);
-    const { updateMatrix, selectedPath, matrixIcons, fetchMatrix } = useMatrix_B({ setError });
+    const { updateMatrix, selectedPath, matrixIcons, matrixDirections, fetchMatrix } = useMatrix_B({ setError });
     // const { updateMatrix, selectedPath, potholesForIcons, fetchMatrixPaths } = useMatrixPaths_B({ setError });
     // const { matrixIcons, fetchMatrixIcons } = useMatrixIcons({ setError });
 
@@ -146,14 +146,14 @@ const CityGrid_B: React.FC<GridProps_B> = ({
                                 // backgroundColor: getCellBackgroundColor(matrixIcons[rowIndex]?.[columnIndex])
                             }}
                         >
-                            {renderIcon(matrixIcons[rowIndex]?.[columnIndex])}
+                            {renderIcon(matrixIcons[rowIndex]?.[columnIndex], matrixDirections?.[rowIndex]?.[columnIndex])}
                         </Paper>
                     </Box>
                 );
             });
         });   
         return cells;
-    }, [updateMatrix, matrixIcons]);
+    }, [updateMatrix, matrixIcons, matrixDirections]);
 
     if (!updateMatrix) {
         return <div>Invalid arguments</div>;

@@ -1,6 +1,6 @@
 import { GameProgress } from "./level";
 
-export type IconDirection = 'up' | 'down' | 'left' | 'right' | 'north' | 'south' | 'east' | 'west';
+export type IconDirection = 'up' | 'down' | 'left' | 'right';
 
 export type LaneConfig = {
   id: string;
@@ -201,6 +201,7 @@ export type MatrixResponse = {
     selectedPath: [number, number][];
     potholes: [number, number][];
     matrixIcons: IconKey[][];
+    matrixDirections: IconDirection[][];
     status: string;
     message: string;
     pathMetrics?: {
@@ -242,7 +243,9 @@ export type MatrixIconsResponse = {
     message: string;
 };
 
-export type MatrixDirectionsRequest = Record<string, [number, number][]>;
+export type MatrixDirectionsRequest = {
+    directions: Record<string, [number, number][]>;
+};
 
 export type MatrixDirectionsResponse = {
     matrix: string[][];
@@ -257,7 +260,7 @@ export interface GridProps_A extends Partial<MatrixRequest_A>, Partial<MatrixIco
     id?: string;
 }
 
-export interface GridProps_B extends Partial<MatrixRequest_B>, Partial<MatrixIconsRequest> {
+export interface GridProps_B extends Partial<MatrixRequest_B>, Partial<MatrixIconsRequest>, Partial<MatrixDirectionsRequest> {
     id?: string;
     multiLane?: MultiLaneGridConfig;
     gameProgress?: GameProgress;
@@ -309,7 +312,7 @@ export const InitGridProps_A = (id: string, totalPotholes: number, props: GridPr
 };
 
 /**
- * Ensure that grid props has defined id, rows, columns, obstacles, matrix, startPoint, endPoint.
+ * Ensure that grid props has defined id, rows, columns, obstacles, matrix, startPoint, endPoint, directions.
  * 
  * No need to config potholes. Let GameProgress handle that.
  * 
@@ -338,6 +341,7 @@ export const InitGridProps_B = (id: string, props: GridProps_B) => {
             matrix[x][y] = 1; 
         }
     });
+    
     return {
         // Required
         id,
@@ -345,6 +349,7 @@ export const InitGridProps_B = (id: string, props: GridProps_B) => {
         columns,
         matrix,
         obstacles: props.obstacles || [],
+        directions: props.directions || {},
         startPoint: props.startPoint || [0,0],
         endPoint: props.endPoint || [columns && columns-1, rows && rows-1],
         // Optional
