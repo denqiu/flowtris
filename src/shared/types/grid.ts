@@ -97,6 +97,12 @@ export const ICONS = {
         name: 'RadioButtonUnchecked',
         directions: null
     },
+    FILLED_POTHOLE: {
+        type: 'component',
+        rotate: null,
+        name: 'Circle',
+        directions: null
+    },
     CAR: {
         type: 'font-awesome',
         rotate: 'image',

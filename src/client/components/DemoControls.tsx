@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, ButtonGroup, Typography, Paper } from '@mui/material';
+import { Box, Button, Radio, ButtonGroup, RadioGroup, FormControl, FormLabel, FormControlLabel, Typography, Paper } from '@mui/material';
 import { People, Construction, Directions } from '@mui/icons-material';
 import { renderIcon } from '../utils/Icons';
 
@@ -44,7 +44,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
       <ButtonGroup sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
         <Button
           variant="contained"
-          startIcon={renderIcon('CAR', 'down')}
+          startIcon={renderIcon('BUS', 'down')}
           onClick={onTransportBus}
           size="small"
           sx={{ backgroundColor: 'var(--color-transport)', color: '#fff' }}
@@ -65,7 +65,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
         </Button>
       </ButtonGroup>
 
-      <ButtonGroup sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+      {/* <ButtonGroup sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
         <Button
           variant="contained"
           startIcon={renderIcon('POTHOLE')}
@@ -76,7 +76,21 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
         >
           Fill Pothole
         </Button>
-      </ButtonGroup>
+      </ButtonGroup> */}
+
+      <FormControl>
+        <FormLabel id="controls-pothole-groups-label">Potholes</FormLabel>
+        <RadioGroup
+          row
+          aria-labelledby="controls-pothole-group-label"
+          name="controls-pothole-groups"
+        >
+          {/* Get list of potholes here */}
+          <FormControlLabel value="1" control={<Radio checkedIcon={renderIcon('FILLED_POTHOLE')} />} label="1" />
+          <FormControlLabel value="2" control={<Radio checkedIcon={renderIcon('FILLED_POTHOLE')} />} label="2" />
+          <FormControlLabel value="3" control={<Radio checkedIcon={renderIcon('FILLED_POTHOLE')} />} label="3" />
+        </RadioGroup>
+      </FormControl>
 
       {/* Hide for now. Revisit later */}
       {/* <ButtonGroup sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
