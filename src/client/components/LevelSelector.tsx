@@ -334,9 +334,9 @@ const LevelSelector: React.FC<LevelSelectorProps> = ({
                   {selectedLevel.timeLimit && (
                     <Typography>Time Limit: {selectedLevel.timeLimit} seconds</Typography>
                   )}
-                  {selectedLevel.sandtrixTimeLimit && (
+                  {/* {selectedLevel.sandtrixTimeLimit && (
                     <Typography>Sandtrix Time: {selectedLevel.sandtrixTimeLimit} seconds</Typography>
-                  )}
+                  )} */}
                 </Box>
               </Box>
 
