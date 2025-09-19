@@ -1,6 +1,6 @@
 import express from 'express';
 import PF from 'pathfinding';
-import { MatrixResponse, MatrixRequest_A, MatrixRequest_B, MatrixIconsResponse, MatrixIconsRequest, MatrixDirectionsRequest, MatrixDirectionsResponse, IconKey } from '../shared/types/grid';
+import { MatrixResponse, MatrixRequest_A, MatrixRequest_B, MatrixIconsResponse, MatrixIconsRequest, MatrixDirectionsRequest, MatrixDirectionsResponse, IconKey, IconDirection } from '../shared/types/grid';
 import { PathDirectionCalculator } from './pathDirections';
 
 /**
@@ -282,11 +282,11 @@ function Matrix(router: express.Router) {
     router.post<
         { id: string }, // URL parameters
         MatrixResponse | { status: string; }, // Response type
-        Required<MatrixRequest_B> & Required<MatrixIconsRequest> // Request type
+        Required<MatrixRequest_B> & Required<MatrixIconsRequest> & Required<MatrixDirectionsRequest> // Request type
     >
     ('/api/grid/B', async (req, res): Promise<void> => {
         const { id } = req.params;
-        const { matrix, startPoint, endPoint, potholeCount, rows, columns, obstacles } = req.body;
+        const { matrix, startPoint, endPoint, potholeCount, rows, columns, obstacles, directions } = req.body;
 
         // Use level id to retrieve matrix or if matrix doesn't exist continue to request body.
         // get matrix icons from db
@@ -332,11 +332,22 @@ function Matrix(router: express.Router) {
                 }
             });
 
+            const matrixDirections: IconDirection[][] = Array.from({ length: rows }, () => Array(columns).fill('down'));
+            // Add directions
+            (Object.entries(new PathDirectionCalculator(rows, columns).calculateDirections(path)) as [IconDirection, [number, number][]][]).forEach(([direction, points]) => {
+                points.forEach(([x, y]) => {
+                    if (matrixDirections[x]) {
+                        matrixDirections[x][y] = direction;
+                    }
+                })
+            });
+
             // Store in sqlite.
             const result = {
                 matrix: matrix,
                 selectedPath: path,
-                matrixIcons: matrixIcons
+                matrixIcons: matrixIcons,
+                matrixDirections: matrixDirections
             };
             res.json({
                 ...result,

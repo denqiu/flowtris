@@ -1,6 +1,4 @@
-import { MatrixDirectionsResponse } from '../shared/types/grid';
-
-export type Direction = 'north' | 'south' | 'east' | 'west';
+import { MatrixDirectionsResponse, IconDirection } from '../shared/types/grid';
 
 /**
  * Convert A* path points into directional matrix
@@ -40,7 +38,7 @@ export class PathDirectionCalculator {
    * Determine initial direction from start point
    * If corner and no direction specified, throw error
    */
-  private getStartDirection(startPoint: [number, number], nextPoint?: [number, number], specifiedDirection?: Direction): Direction {
+  private getStartDirection(startPoint: [number, number], nextPoint?: [number, number], specifiedDirection?: IconDirection): IconDirection {
     const [x, y] = startPoint;
     
     if (this.isCorner(startPoint)) {
@@ -52,18 +50,18 @@ export class PathDirectionCalculator {
       // Determine from next point
       if (nextPoint) {
         const [nextX, nextY] = nextPoint;
-        if (nextX > x) return 'south';
-        if (nextX < x) return 'north';
-        if (nextY > y) return 'east';
-        if (nextY < y) return 'west';
+        if (nextX > x) return 'down';
+        if (nextX < x) return 'up';
+        if (nextY > y) return 'right';
+        if (nextY < y) return 'left';
       }
     }
 
     // Edge point direction determination
-    if (x === 0) return 'south'; // Top edge
-    if (x === this.rows - 1) return 'north'; // Bottom edge
-    if (y === 0) return 'east'; // Left edge
-    if (y === this.columns - 1) return 'west'; // Right edge
+    if (x === 0) return 'down'; // Top edge
+    if (x === this.rows - 1) return 'up'; // Bottom edge
+    if (y === 0) return 'right'; // Left edge
+    if (y === this.columns - 1) return 'left'; // Right edge
 
     throw new Error('Start point must be on edge or corner of grid');
   }
@@ -71,14 +69,14 @@ export class PathDirectionCalculator {
   /**
    * Calculate direction between two points
    */
-  private getDirectionBetweenPoints(from: [number, number], to: [number, number]): Direction {
+  private getDirectionBetweenPoints(from: [number, number], to: [number, number]): IconDirection {
     const [fromX, fromY] = from;
     const [toX, toY] = to;
 
-    if (toX > fromX) return 'south';
-    if (toX < fromX) return 'north';
-    if (toY > fromY) return 'east';
-    if (toY < fromY) return 'west';
+    if (toX > fromX) return 'down';
+    if (toX < fromX) return 'up';
+    if (toY > fromY) return 'right';
+    if (toY < fromY) return 'left';
 
     throw new Error('Points must be adjacent and different');
   }
@@ -86,7 +84,7 @@ export class PathDirectionCalculator {
   /**
    * Convert path points to directional segments
    */
-  public calculateDirections(path: [number, number][], specifiedStartDirection?: Direction): MatrixDirectionsResponse {
+  public calculateDirections(path: [number, number][], specifiedStartDirection?: IconDirection): Record<IconDirection, [number, number][]> {
     if (path.length === 0) {
       throw new Error('Path cannot be empty');
     }
@@ -96,16 +94,11 @@ export class PathDirectionCalculator {
       throw new Error('First point must be edge or corner');
     }
 
-    // Initialize directional matrix
-    const matrix: string[][] = Array.from({ length: this.rows }, () => 
-      Array(this.columns).fill('')
-    );
-
-    const directionMap: Record<Direction, [number, number][]> = {
-      north: [],
-      south: [],
-      east: [],
-      west: []
+    const directionMap: Record<IconDirection, [number, number][]> = {
+      up: [],
+      down: [],
+      right: [],
+      left: []
     };
 
     // Determine start direction
@@ -125,7 +118,6 @@ export class PathDirectionCalculator {
 
       // Add current point to current direction
       directionMap[currentDirection].push(currentPoint);
-      matrix[currentPoint[0]][currentPoint[1]] = currentDirection;
 
       // If direction changes, update current direction
       if (nextDirection !== currentDirection) {
@@ -136,13 +128,8 @@ export class PathDirectionCalculator {
     // Add final point
     const lastPoint = path[path.length - 1];
     directionMap[currentDirection].push(lastPoint);
-    matrix[lastPoint[0]][lastPoint[1]] = currentDirection;
 
-    return {
-      matrix,
-      status: 'success',
-      message: 'Directions calculated successfully'
-    };
+    return directionMap;
   }
 
   /**
