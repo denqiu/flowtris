@@ -19,6 +19,7 @@ You must transport people through the city to the destination and fill in or avo
 - [PRD (Project Requirements Document)](PRD.md)
 - Tasks: See [Issues](https://github.com/denqiu/flowtris/issues)
 - [Devpost](https://devpost.com/software/hearing-mapped-to-infrastructure-analogy)
+- This is the testing subreddit: [Demo post](https://www.reddit.com/r/flowtris_dev/comments/1n8x0ho/flowtris/)
 
 ### FAQ
 
