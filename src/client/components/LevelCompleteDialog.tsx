@@ -170,6 +170,11 @@ const LevelCompleteDialog: React.FC<LevelCompleteDialogProps> = ({
                   <Typography>
                     {gameProgress.peopleTransported} / {level.objectives.peopleToTransport}
                   </Typography>
+                  <LinearProgress
+                    variant="determinate"
+                    value={(gameProgress.peopleTransported / level.objectives.peopleToTransport) * 100}
+                    sx={{ height: 8, borderRadius: 4 }}
+                  />
                 </Box>
 
                 {/* Potholes Remaining */}
@@ -223,44 +228,12 @@ const LevelCompleteDialog: React.FC<LevelCompleteDialogProps> = ({
               </Box>
             </CardContent>
           </Card>
-
-          {/* Progress Bars */}
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            <Typography variant="body2" color="text.secondary">
-              Objectives Progress
-            </Typography>
-            
-            {/* People Transport Progress */}
-            <Box>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                <Typography variant="body2">People Transported</Typography>
-                <Typography variant="body2">
-                  {gameProgress.peopleTransported} / {level.objectives.peopleToTransport}
-                </Typography>
-              </Box>
-              <LinearProgress
-                variant="determinate"
-                value={(gameProgress.peopleTransported / level.objectives.peopleToTransport) * 100}
-                sx={{ height: 8, borderRadius: 4 }}
-              />
-            </Box>
-
-            {/* Potholes Progress */}
-            {level.objectives.potholeCount && level.objectives.potholeCount > 0 && (
-              <Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                  <Typography variant="body2">Potholes Remaining</Typography>
-                  <Typography variant="body2">
-                    {gameProgress.potholeCount}
-                  </Typography>
-                </Box>
-              </Box>
-            )}
-          </Box>
         </Box>
       </DialogContent>
 
       <DialogActions sx={{ p: 3, gap: 1 }}>
+        <Typography>Notice: Next Level logic is not working correctly. Clicking the button will not crash the UI. For now, return to menu to select the next level.</Typography>
+
         <Button
           onClick={onReturnToMenu}
           variant="outlined"

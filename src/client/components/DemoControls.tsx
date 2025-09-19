@@ -25,7 +25,17 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
   disablePothole = false,
 }) => {
   return (
-    <Paper 
+    // <Paper 
+    //   elevation={3} 
+    //   sx={{ 
+    //     p: 2, 
+    //     mb: 2, 
+    //     backgroundColor: '#f5f5f5',
+    //     border: '2px dashed #ccc'
+    //   }}
+    // >
+
+    <FormControl
       elevation={3} 
       sx={{ 
         p: 2, 
@@ -65,7 +75,19 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
         </Button>
       </ButtonGroup>
 
-      {/* <ButtonGroup sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+      <FormLabel id="controls-pothole-groups-label">Potholes (WIP)</FormLabel>
+      <RadioGroup
+        row
+        aria-labelledby="controls-pothole-group-label"
+        name="controls-pothole-groups"
+      >
+        {/* Get list of potholes here */}
+        <FormControlLabel value="1" control={<Radio checkedIcon={renderIcon('FILLED_POTHOLE')} />} label="1" />
+        <FormControlLabel value="2" control={<Radio checkedIcon={renderIcon('FILLED_POTHOLE')} />} label="2" />
+        <FormControlLabel value="3" control={<Radio checkedIcon={renderIcon('FILLED_POTHOLE')} />} label="3" />
+      </RadioGroup>
+
+      <ButtonGroup sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
         <Button
           variant="contained"
           startIcon={renderIcon('POTHOLE')}
@@ -76,21 +98,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
         >
           Fill Pothole
         </Button>
-      </ButtonGroup> */}
-
-      <FormControl>
-        <FormLabel id="controls-pothole-groups-label">Potholes</FormLabel>
-        <RadioGroup
-          row
-          aria-labelledby="controls-pothole-group-label"
-          name="controls-pothole-groups"
-        >
-          {/* Get list of potholes here */}
-          <FormControlLabel value="1" control={<Radio checkedIcon={renderIcon('FILLED_POTHOLE')} />} label="1" />
-          <FormControlLabel value="2" control={<Radio checkedIcon={renderIcon('FILLED_POTHOLE')} />} label="2" />
-          <FormControlLabel value="3" control={<Radio checkedIcon={renderIcon('FILLED_POTHOLE')} />} label="3" />
-        </RadioGroup>
-      </FormControl>
+      </ButtonGroup>
 
       {/* Hide for now. Revisit later */}
       {/* <ButtonGroup sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
@@ -124,6 +132,7 @@ export const DemoControls: React.FC<DemoControlsProps> = ({
           Fail Level
         </Button>
       </ButtonGroup>
-    </Paper>
+    </FormControl>
+    // </Paper>
   );
 };
