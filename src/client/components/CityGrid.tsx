@@ -143,7 +143,7 @@ const CityGrid_B: React.FC<GridProps_B> = ({
                                 display: 'flex', 
                                 alignItems: 'center', 
                                 justifyContent: 'center',
-                                backgroundColor: getCellBackgroundColor(matrixIcons[rowIndex]?.[columnIndex])
+                                // backgroundColor: getCellBackgroundColor(matrixIcons[rowIndex]?.[columnIndex])
                             }}
                         >
                             {renderIcon(matrixIcons[rowIndex]?.[columnIndex])}

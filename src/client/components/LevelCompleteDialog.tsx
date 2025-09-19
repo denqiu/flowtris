@@ -22,6 +22,7 @@ import {
   Cancel,
 } from '@mui/icons-material';
 import { GameProgress, LevelConfig } from '../../shared/types/level';
+import { renderIcon } from '../utils/Icons';
 
 interface LevelCompleteDialogProps {
   open: boolean;
@@ -175,7 +176,8 @@ const LevelCompleteDialog: React.FC<LevelCompleteDialogProps> = ({
                 {level.objectives.potholeCount && level.objectives.potholeCount > 0 && (
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Construction fontSize="small" />
+                      {/* <Construction fontSize="small" /> */}
+                      {renderIcon('POTHOLE')}
                       <Typography>Potholes Remaining</Typography>
                     </Box>
                     <Typography>

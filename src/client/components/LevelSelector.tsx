@@ -27,6 +27,7 @@ import {
 } from '@mui/icons-material';
 import { LevelConfig, LevelPack, LevelStats, Difficulty } from '../../shared/types/level';
 import { LEVEL_PACKS, getLevelsByPack } from '../../shared/data/levels';
+import { renderIcon } from '../utils/Icons';
 
 interface LevelSelectorProps {
   onLevelSelect: (levelId: string) => void;
@@ -241,7 +242,8 @@ const LevelSelector: React.FC<LevelSelectorProps> = ({
                         </Typography>
                       {level.objectives.potholeCount && level.objectives.potholeCount > 0 && (
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                          <Construction fontSize="small" />
+                          {/* <Construction fontSize="small" /> */}
+                          {renderIcon('POTHOLE')}
                           <Typography variant="body2">
                             {level.objectives.potholeCount}
                           </Typography>
@@ -308,7 +310,8 @@ const LevelSelector: React.FC<LevelSelectorProps> = ({
                   </Box>
                   {selectedLevel.objectives.potholeCount && selectedLevel.objectives.potholeCount > 0 && (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Construction />
+                      {/* <Construction /> */}
+                      {renderIcon('POTHOLE')}
                       <Typography>Found {selectedLevel.objectives.potholeCount} potholes</Typography>
                     </Box>
                   )}
