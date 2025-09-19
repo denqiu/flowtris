@@ -12,6 +12,7 @@ import { DemoControls } from './components/DemoControls';
 import FeatureDemo from './components/FeatureDemo';
 import { LevelConfig } from '../shared/types/level';
 import { getLevelsByPack } from '../shared/data/levels';
+import { showToast } from '@devvit/web/client';
 
 export const App = () => {
   const {
@@ -82,13 +83,16 @@ export const App = () => {
       return {
         ...prev,
         nextIndex: nextIndex,
-        isDisabled: nextIndex === getLevelsByPack(props.packId || selectedPack || 'tutorial').length
+        // isDisabled: nextIndex === getLevelsByPack(props.packId || selectedPack || 'tutorial').length
+        isDisabled: false
       };
     });
     // console.log(props.packId || selectedPack || 'tutorial', nextLevelState, getLevelsByPack(props.packId || selectedPack || 'tutorial').length)
   };
 
   const handleNextLevel = () => {
+    showToast({ appearance: 'neutral', text: 'Notice: Next Level logic is not working correctly. Clicking the button will not crash the UI. For now, return to menu to select the next level.' });
+    return;
     if (nextLevelState.isDisabled) {
       return;
     }

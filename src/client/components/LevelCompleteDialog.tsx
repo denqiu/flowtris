@@ -232,8 +232,6 @@ const LevelCompleteDialog: React.FC<LevelCompleteDialogProps> = ({
       </DialogContent>
 
       <DialogActions sx={{ p: 3, gap: 1 }}>
-        <Typography>Notice: Next Level logic is not working correctly. Clicking the button will not crash the UI. For now, return to menu to select the next level.</Typography>
-
         <Button
           onClick={onReturnToMenu}
           variant="outlined"
