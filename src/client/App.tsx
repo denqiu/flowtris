@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { Box, Container, Typography, Button } from '@mui/material';
+import { Box, Container, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 
 import { useLevelManager } from './hooks/useLevelManager';
 import LevelSelector from './components/LevelSelector';
@@ -12,7 +12,6 @@ import { DemoControls } from './components/DemoControls';
 import FeatureDemo from './components/FeatureDemo';
 import { LevelConfig } from '../shared/types/level';
 import { getLevelsByPack } from '../shared/data/levels';
-import { showToast } from '@devvit/web/client';
 
 export const App = () => {
   const {
@@ -38,6 +37,7 @@ export const App = () => {
   const [showLevelSelector, setShowLevelSelector] = useState(true);
   const [showCompletionDialog, setShowCompletionDialog] = useState(false);
   const [showFeatureDemo, setShowFeatureDemo] = useState(false);
+  const [showNextLevelNotice, setShowNextLevelNotice] = useState(false);
 
   // Show completion dialog when level is completed or failed
   useEffect(() => {
@@ -91,7 +91,7 @@ export const App = () => {
   };
 
   const handleNextLevel = () => {
-    showToast({ appearance: 'neutral', text: 'Notice: Next Level logic is not working correctly. Clicking the button will not crash the UI. For now, return to menu to select the next level.' });
+    setShowNextLevelNotice(true);
     return;
     if (nextLevelState.isDisabled) {
       return;
@@ -248,6 +248,36 @@ export const App = () => {
           onRetry={handleRetryLevel}
           onReturnToMenu={handleReturnToMenu}
         />
+        <Dialog
+          open={showNextLevelNotice}
+          maxWidth="sm"
+          fullWidth
+          disableEscapeKeyDown
+        >
+          <DialogTitle>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Typography variant="h4" component="h1">Notice for Next Level</Typography>
+            </Box>
+          </DialogTitle>
+    
+          <DialogContent>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <Typography variant="h6" gutterBottom>
+                Notice: Next Level logic is not working correctly. Clicking the button will not crash the UI. For now, return to menu to select the next level.
+              </Typography>
+            </Box>
+          </DialogContent>
+    
+          <DialogActions sx={{ p: 3, gap: 1 }}>
+            <Button
+              onClick={() => setShowNextLevelNotice(false)}
+              variant="contained"
+              fullWidth
+            >
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     );
   }
