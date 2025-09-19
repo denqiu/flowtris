@@ -141,16 +141,16 @@ export const App = () => {
   // Show level selector
   if (showLevelSelector) {
     return (
-      // <Box sx={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
-      //   <Box sx={{ position: 'fixed', top: 16, right: 16, zIndex: 1000 }}>
-      //     <Button 
-      //       variant="outlined" 
-      //       onClick={() => setShowFeatureDemo(false)}
-      //       sx={{ mr: 1 }}
-      //     >
-      //       View Feature Demo
-      //     </Button>
-      //   </Box>
+      <Box sx={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
+        {/* <Box sx={{ position: 'fixed', top: 16, right: 16, zIndex: 1000 }}>
+          <Button 
+            variant="outlined" 
+            onClick={() => setShowFeatureDemo(false)}
+            sx={{ mr: 1 }}
+          >
+            View Feature Demo
+          </Button>
+        </Box> */}
         <LevelSelector
           onLevelSelect={handleLevelSelect}
           levelStats={levelStats}
@@ -202,10 +202,15 @@ export const App = () => {
             {/* Demo Controls */}
             <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
               <DemoControls
-                onTransportPerson={() => updateProgress({ 
+                onTransportBus={() => updateProgress({ 
                   peopleTransported: gameProgress.peopleTransported + 1,
                   score: gameProgress.score + 100 
                 })}
+                onTransportCar={() => updateProgress({ 
+                  peopleTransported: gameProgress.peopleTransported + 1,
+                  score: gameProgress.score + 150 
+                })}
+                
                 onFillPothole={() => updateProgress({ 
                   potholeCount: gameProgress.potholeCount - 1,
                   score: gameProgress.score + 50 

@@ -178,16 +178,17 @@ const GameHUD: React.FC<GameHUDProps> = ({
           )}
 
           {/* Game State Indicator */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              {/* Moves Left (Hints) */}
-              <Typography variant="body2" color="text.secondary">
-                Moves left: {gameProgress.movesLeft === null || gameProgress.movesLeft === undefined 
-                ? <span style={{fontSize: '1.2rem'}} >∞</span> 
-                // ? <Typography sx={{fontSize: '1.5rem'}} variant="body2" color="text.secondary">∞</Typography>
-                // ? '∞'
-                 : gameProgress.movesLeft}
-              </Typography>
-            </Box>
+          {/* <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}> */}
+            {/* Hide for now. Revisit later */}
+            {/* Moves Left (Hints) */}
+            {/* <Typography variant="body2" color="text.secondary">
+              Moves left: {gameProgress.movesLeft === null || gameProgress.movesLeft === undefined 
+              ? <span style={{fontSize: '1.2rem'}} >∞</span> 
+              // ? <Typography sx={{fontSize: '1.5rem'}} variant="body2" color="text.secondary">∞</Typography>
+              // ? '∞'
+                : gameProgress.movesLeft}
+            </Typography>
+          </Box> */}
 
           {/* Stars Earned */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
