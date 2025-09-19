@@ -1,4 +1,4 @@
-import { GridProps_A, GridProps_B } from './grid';
+import { GridProps_B } from './grid';
 
 export type Difficulty = 'easy' | 'medium' | 'hard' | 'endless';
 

@@ -33,8 +33,8 @@ const FeatureDemo: React.FC = () => {
                 { iconKey: 'BUS', points: [[5, 0]], direction: 'east', },
                 { iconKey: 'ROAD', points: [[1, 1], [1, 2], [1, 3]], direction: 'east' },
                 { iconKey: 'ROAD', points: [[5, 1], [5, 2], [5, 3]], direction: 'east' },
-                { iconKey: 'TREE', points: [[0, 5], [7, 5]] },
-                { iconKey: 'CITY', points: [[0, 9], [7, 9]] }
+                { iconKey: 'TREE', points: [[0, 5], [7, 5]], direction: null },
+                { iconKey: 'CITY', points: [[0, 9], [7, 9]], direction: null }
             ],
             // lanes: {
             //     fast: { startRow: 0, endRow: 3 },

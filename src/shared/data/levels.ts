@@ -1,5 +1,5 @@
-import { InitGridProps_A, InitGridProps_B } from '../types/grid';
-import { LevelConfig, LevelPack, Difficulty, GameMode } from '../types/level';
+import { InitGridProps_B } from '../types/grid';
+import { LevelConfig, LevelPack, Difficulty } from '../types/level';
 
 // Predefined level configurations.
 export const LEVELS: LevelConfig[] = [
@@ -21,10 +21,27 @@ export const LEVELS: LevelConfig[] = [
         // { iconKey: 'ROAD', points: [[1, 1], [1, 2], [1, 3]], direction: 'east' },
         // { iconKey: 'BUILDING', points: [[0, 0], [0, 7]] }
       ],
-      // lanes: {
-      //   fast: { startRow: 0, endRow: 2 },
-      //   slow: { startRow: 3, endRow: 5 }
-      // }
+      multiLane: {
+        lanes: [
+          {
+            id: 'slow-lane',
+            startRow: 3,
+            endRow: 5,
+            vehicleType: 'bus',
+            startPoints: [[3, 0], [4, 0]],
+            endPoints: [[3, 7], [4, 7]]
+          },
+          {
+            id: 'fast-lane',
+            startRow: 0,
+            endRow: 2,
+            vehicleType: 'car',
+            startPoints: [[0, 0], [1, 0]],
+            endPoints: [[0, 7], [1, 7]]
+          }
+        ],
+        selectedLaneId: 'slow-lane'
+      }
     },
     objectives: {
       peopleToTransport: 3,

@@ -1,12 +1,26 @@
 import { GameProgress } from "./level";
 
-export type IconDirection = 'up' | 'down' | 'left' | 'right';
+export type IconDirection = 'up' | 'down' | 'left' | 'right' | 'north' | 'south' | 'east' | 'west';
+
+export type LaneConfig = {
+  id: string;
+  startRow: number;
+  endRow: number;
+  vehicleType: 'car' | 'bus';
+  startPoints: [number, number][];
+  endPoints: [number, number][];
+};
+
+export type MultiLaneGridConfig = {
+  lanes: LaneConfig[];
+  selectedLaneId?: string;
+};
 
 export type IconType = {
     type: 'component' | 'symbol-outline' | 'font-awesome';
     rotate: 'degree' | 'image' | null;
     name: string | undefined;
-    directions: Record<IconDirection, number | { name: string; flip: boolean | null }> | null
+    directions: Partial<Record<IconDirection, number | { name: string; flip: boolean | null }>> | null
 };
 
 /**
@@ -33,10 +47,60 @@ export const ICONS = {
             'right': 90
         }
     },
+    ROAD_NORTH: {
+        type: 'symbol-outline',
+        rotate: 'degree',
+        name: 'arrow_upward',
+        directions: {
+            'up': 0,
+            'down': 180,
+            'left': 270,
+            'right': 90
+        }
+    },
+    ROAD_SOUTH: {
+        type: 'symbol-outline',
+        rotate: 'degree',
+        name: 'arrow_downward',
+        directions: {
+            'up': 180,
+            'down': 0,
+            'left': 90,
+            'right': 270
+        }
+    },
+    ROAD_EAST: {
+        type: 'symbol-outline',
+        rotate: 'degree',
+        name: 'arrow_forward',
+        directions: {
+            'up': 270,
+            'down': 90,
+            'left': 180,
+            'right': 0
+        }
+    },
+    ROAD_WEST: {
+        type: 'symbol-outline',
+        rotate: 'degree',
+        name: 'arrow_back',
+        directions: {
+            'up': 90,
+            'down': 270,
+            'left': 0,
+            'right': 180
+        }
+    },
     POTHOLE: {
         type: 'component',
         rotate: null,
         name: 'RadioButtonUnchecked',
+        directions: null
+    },
+    FILLED_POTHOLE: {
+        type: 'component',
+        rotate: null,
+        name: 'Circle',
         directions: null
     },
     CAR: {
@@ -62,10 +126,47 @@ export const ICONS = {
             }
         },
     },
-    // BUS: { type: 'component', name: 'DirectionsBusIcon', directions: ['north', 'south', 'east', 'west'] },
-    // BUILDING: { type: 'component', name: 'BusinessIcon' },
-    // TREE: { type: 'component', name: 'ParkIcon' },
-    // CITY: { type: 'component', name: 'LocationCityIcon' }
+    BUS: {
+        type: 'font-awesome',
+        rotate: 'image',
+        name: undefined,
+        directions: {
+            'up': {
+                name: 'bus-simple',
+                flip: null
+            },
+            'down': {
+                name: 'bus-simple',
+                flip: null
+            },
+            'left': {
+                name: 'bus-simple',
+                flip: true
+            },
+            'right': {
+                name: 'bus-simple',
+                flip: false
+            }
+        },
+    },
+    BUILDING: {
+        type: 'component',
+        rotate: null,
+        name: 'Apartment',
+        directions: null
+    },
+    TREE: {
+        type: 'component',
+        rotate: null,
+        name: 'Forest',
+        directions: null
+    },
+    CITY: {
+        type: 'component',
+        rotate: null,
+        name: 'LocationCity',
+        directions: null
+    },
     HOME: {
         type: 'component',
         rotate: null,
@@ -102,6 +203,24 @@ export type MatrixResponse = {
     matrixIcons: IconKey[][];
     status: string;
     message: string;
+    pathMetrics?: {
+        totalMoves: number;
+        estimatedMoves: number;
+        efficiency: number; // 0-1 scale
+        alternativePaths?: number;
+    };
+};
+
+export type PathMovesCalculation = {
+    pathLength: number;
+    estimatedMoves: number;
+    efficiency: number;
+    alternativeRoutes: number;
+    moveBreakdown: {
+        navigationMoves: number;
+        potholeRepairs: number;
+        peoplePickup: number;
+    };
 };
 
 export type MatrixObstacle = {
@@ -140,6 +259,7 @@ export interface GridProps_A extends Partial<MatrixRequest_A>, Partial<MatrixIco
 
 export interface GridProps_B extends Partial<MatrixRequest_B>, Partial<MatrixIconsRequest> {
     id?: string;
+    multiLane?: MultiLaneGridConfig;
     gameProgress?: GameProgress;
 }
 

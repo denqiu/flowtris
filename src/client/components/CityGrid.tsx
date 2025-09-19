@@ -22,6 +22,16 @@ const getRotationForDirection = (direction: string): number => {
 };
 
 /**
+ * Get background color for cell based on icon type
+ */
+const getCellBackgroundColor = (iconKey?: string): string => {
+    if (iconKey?.startsWith('ROAD')) {
+        return '#4a4a4a'; // Dark grey road color
+    }
+    return '#f5f5f5'; // Default light grey background
+};
+
+/**
  * Render grid with A* path if matrix and paths are provided. Otherwise don't update render.
  * Assume grid props to be already initialized.
  * 
@@ -77,7 +87,7 @@ const CityGrid_A: React.FC<GridProps_A> = ({
             <Box sx={{ 
                 display: 'grid', 
                 gridTemplateColumns: `repeat(${columns}, 1fr)`, 
-                gap: 1,
+                gap: 0, // Set spacing to 0 as requested
                 maxWidth: '600px', // Set max width
                 margin: '0 auto'   // Center the grid
             }}>
@@ -133,6 +143,7 @@ const CityGrid_B: React.FC<GridProps_B> = ({
                                 display: 'flex', 
                                 alignItems: 'center', 
                                 justifyContent: 'center',
+                                // backgroundColor: getCellBackgroundColor(matrixIcons[rowIndex]?.[columnIndex])
                             }}
                         >
                             {renderIcon(matrixIcons[rowIndex]?.[columnIndex])}
@@ -154,7 +165,7 @@ const CityGrid_B: React.FC<GridProps_B> = ({
         <Box sx={{ 
             display: 'grid', 
             gridTemplateColumns: `repeat(${columns}, 1fr)`, 
-            gap: 1,
+            gap: 0, // Set spacing to 0 as requested
             maxWidth: '600px', // Set max width
             margin: '0 auto'   // Center the grid
         }}>

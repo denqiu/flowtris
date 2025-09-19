@@ -1,6 +1,7 @@
 import express from 'express';
 import PF from 'pathfinding';
 import { MatrixResponse, MatrixRequest_A, MatrixRequest_B, MatrixIconsResponse, MatrixIconsRequest, MatrixDirectionsRequest, MatrixDirectionsResponse, IconKey } from '../shared/types/grid';
+import { PathDirectionCalculator } from './pathDirections';
 
 /**
  * Note: Decision paralysis coming in. Rather than try to automate paths, try giving players more control over paths.
@@ -239,7 +240,32 @@ function MatrixDirections(router: express.Router) {
         Required<MatrixDirectionsRequest> // Request type
     >
     ('/api/grid/directions', async (req, res): Promise<void> => {
+        try {
+            const pathsData = req.body;
 
+            // For now, assume grid dimensions - in production this would come from level config
+            const calculator = new PathDirectionCalculator(6, 8);
+            
+            const entries = Object.entries(pathsData);
+            if (entries.length === 1 && entries[0]) {
+                // Single path
+                const [, path] = entries[0];
+                const result = calculator.calculateDirections(path);
+                res.json(result);
+            } else {
+                // Multiple paths
+                const results = calculator.calculateMultiplePathDirections(pathsData);
+                // Return the first successful result for now
+                const firstSuccess = Object.values(results).find(r => r.status === 'success');
+                res.json(firstSuccess || { status: 'error', message: 'No valid paths found', matrix: [] });
+            }
+        } catch (error) {
+            res.status(500).json({ 
+                status: 'error', 
+                message: error instanceof Error ? error.message : 'Unknown error',
+                matrix: []
+            });
+        }
     });
 }
 

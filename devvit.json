@@ -28,6 +28,9 @@
   "triggers": {
     "onAppInstall": "/internal/on-app-install"
   },
+  "marketingAssets": {
+    "icon": "assets/thumbnail.png"
+  },
   "dev": {
     "subreddit": "flowtris_dev"
   }
