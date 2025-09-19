@@ -29,7 +29,7 @@
     "onAppInstall": "/internal/on-app-install"
   },
   "marketingAssets": {
-    "icon": "assets/thumbnail.png"
+    "icon": "assets/thumbnail_prototype_color.png"
   },
   "dev": {
     "subreddit": "flowtris_dev"
